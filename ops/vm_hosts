@@ -1,0 +1,98 @@
+## UCP
+[ucp_main]
+clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
+
+[ucp]
+clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-ucp02 ip_addr='10.60.59.12/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-ucp03 ip_addr='10.60.59.13/16' esxi_host='esxi-clh-3.cloudra.local'
+
+[ucp:vars]
+cpus='4'
+ram='8192'
+disk2_size='500'
+node_policy='clh-bronze'
+
+# DTR
+[dtr_main]
+clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
+
+[dtr]
+clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-dtr02 ip_addr='10.60.59.15/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-dtr03 ip_addr='10.60.59.16/16' esxi_host='esxi-clh-3.cloudra.local'
+
+[dtr:vars]
+cpus='2' 
+ram='16384' 
+disk2_size='500'
+node_policy='clh-gold'
+
+## WORKER
+[worker]
+clh-worker01 ip_addr='10.60.59.21/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-worker02 ip_addr='10.60.59.22/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-worker03 ip_addr='10.60.59.23/16' esxi_host='esxi-clh-3.cloudra.local'
+
+[worker:vars]
+cpus='4'
+ram='65536'
+disk2_size='500'
+node_policy='clh-bronze'
+
+## LOAD BALANCERS
+[ucp_lb]
+clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
+
+[dtr_lb]
+clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
+
+[worker_lb]
+clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
+
+[lbs]
+clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
+clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
+clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
+
+[lbs:vars]
+cpus='2'
+ram='4096'
+node_policy='clh-bronze'
+
+[docker:children]
+ucp
+dtr
+worker
+
+[nfs]
+clh-nfs ip_addr='10.60.59.20/16'    esxi_host='esxi-clh-3.cloudra.local'
+
+[nfs:vars]
+cpus='2'
+ram='4096'
+disk2_size='500'
+node_policy='clh-gold'
+
+[logger]
+clh-logger ip_addr='10.60.59.24/16' esxi_host='esxi-clh-2.cloudra.local'
+
+[logger:vars]
+cpus='2'
+ram='4096'
+node_policy='clh-gold'
+
+[vms:children]
+ucp
+dtr
+worker
+lbs
+nfs
+logger
+
+[vms:vars]
+disk1_size='100'
+
+# Local 
+[local]
+localhost ansible_connection=local

@@ -1,0 +1,32 @@
+###
+# Copyright (2017) Hewlett Packard Enterprise Development LP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+#
+# perform a backup of the DTR metadata and Data
+#
+ucp_id=$1
+backup_name=$2
+backup_meta=${backup_name}_meta.tar 
+backup_data=${backup_name}_data.tar 
+ 
+ 
+# backup UCP
+docker container run --log-driver none --rm  --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:{{ ucp_version }} backup --id $ucp_id > /tmp/backup_ucp.tar 
+
+# save the tar files in the backup volume 
+docker run  --rm -v{{ site_backup_volume_name }}:/mnt -v/tmp/backup_ucp.tar:/tmp/backup_ucp.tar --env FN=$backup_data alpine sh -c 'cp /tmp/backup_ucp.tar /mnt/$FN' 
+ 
+#verify that the backup was saved 
+docker run --rm -v{{ site_backup_volume_name }}:/mnt alpine sh -c 'ls -lrt /mnt' 

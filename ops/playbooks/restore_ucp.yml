@@ -1,0 +1,110 @@
+###
+# Copyright (2017) Hewlett Packard Enterprise Development LP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+### 
+---
+- hosts: ucp_main
+  gather_facts: false
+  become_user: root
+  become: true
+
+  vars_files:
+    - ../group_vars/vars
+    - ../group_vars/vault
+    - ../group_vars/backups
+
+  vars:
+    UCPIP:  "{{groups.ucp_main[0]}}.{{domain_name}}"
+    UCPUSER: "{{ucp_username}}"
+    UCPPASSWORD: "{{ucp_password}}"
+    JOINING_IP:  "{{ hostvars[groups.ucp_main[0]]['ip_addr'] | ipaddr('address')}}:2377"
+
+  environment: "{{ env }}"
+
+  tasks:
+    - name: Open required ports for Workers
+      firewalld:
+        port: "{{ item }}"
+        immediate: true
+        permanent: true
+        state: enabled
+      with_items:
+        - 443/tcp
+        - 2376/tcp
+        - 2377/tcp
+        - 4789/tcp
+        - 4789/udp
+        - 7946/tcp
+        - 7946/udp
+        - 12376/tcp
+        - 12379-12387/tcp
+
+    - name: Check if node already belongs to the swarm
+      shell: docker info | grep "Swarm{{":"}} inactive" | wc -l
+      register: swarm_inactive
+
+#
+# Copy the backup files to the target
+#
+    - name: Copy the swarm data
+      copy:
+        src: "{{ backup_swarm }}/"
+        dest: /tmp/backup_swarm.tar
+      when: inventory_hostname in groups.ucp_main
+
+    - name: Copy the UCP data
+      copy:
+        src: "{{ backup_ucp }}/"
+        dest: /tmp/backup_ucp.tar
+      when: inventory_hostname in groups.ucp_main
+
+    - name: Creates directory
+      file:
+        path: /root/scripts
+        state: directory
+      when: inventory_hostname in groups.ucp_main
+
+    - name: Copy restore script to target
+      template: src=../templates/restore_ucp.sh.j2 dest=/root/scripts/restore_ucp.sh
+      when: inventory_hostname in groups.ucp_main
+
+    - file:
+        path: /root/scripts/restore_ucp.sh
+        mode: 0744
+      when: inventory_hostname in groups.ucp_main
+
+    - name: restore UCP
+      shell: /root/scripts/restore_ucp.sh 
+      register: res
+      when: inventory_hostname in groups.ucp_main and swarm_inactive.stdout == "1"
+
+    - name: Retrieve a token for the UCP API
+      uri:
+        url: "https://{{ UCPIP }}/auth/login"
+        headers:
+          Content-Type: application/json
+        method: POST
+        status_code: 200
+        body_format: json
+        validate_certs: no
+        body: '{"username":"{{ UCPUSER }}","password":"{{ UCPPASSWORD }}"}'
+      register: resp
+      until: resp.status == 200
+      retries: 20
+      delay: 5
+
+    - name: Wait for UCP to start
+      command: "sleep 60"
+
+

@@ -1,0 +1,14 @@
+---
+allow_duplicates: no
+dependencies:
+  - role: chris7444.openports
+    chris7444_openports_ports:
+      - 443/tcp
+      - 2376/tcp
+      - 2377/tcp
+      - 4789/tcp
+      - 4789/udp
+      - 7946/tcp
+      - 7946/udp
+      - 12376/tcp
+      - 12379-12387/tcp

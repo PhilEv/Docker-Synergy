@@ -1,0 +1,14 @@
+#
+# Site backups
+#
+site_backup_volume_name: site_backups
+svt_cluster: Cluster_CLH
+
+ucp_cert_path: "/root/certs.clh"
+backup_swarm: "/root/backups/backup_swarm.tar"
+backup_ucp: "/root/backups/backup_ucp.tar"
+backup_dtr_meta: "/root/backups/backup_dtr_meta.tar"
+backup_dtr_data: "/root/backups/backup_dtr_data.tar"
+backup_dtr_id: "5769ac2b0984"
+backup_dest: "/root/backups"
+_debug: "true"

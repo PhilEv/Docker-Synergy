@@ -1,0 +1,35 @@
+###
+# Copyright (2017) Hewlett Packard Enterprise Development LP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+#
+# perform a backup of the DTR metadata and Data
+#
+replica_id=$1
+backup_name=$2
+#replica_id=$(docker ps --format '{{ '{{' }} .Names {{ '}}' }}' | grep dtr-registry | awk -F'-' '{print $3}') 
+#backup_name=backup_${replica_id}_$(hostname -s)_${timestamp}
+backup_meta=${backup_name}_meta.tar 
+backup_data=${backup_name}_data.tar 
+ 
+ 
+# backup the DTR metadata 
+docker run --log-driver none --rm docker/dtr:{{ dtr_version }} backup --ucp-url https://{{ groups.ucp_lb[0] }}.{{ domain_name}} --ucp-insecure-tls --ucp-username '{{ucp_username}}' --ucp-password '{{ucp_password}}'  --existing-replica-id $replica_id > /tmp/backup_meta.tar 
+
+ 
+# save the tar files in the backup volume 
+docker run  --rm -v{{ site_backup_volume_name }}:/mnt -v/tmp/backup_meta.tar:/tmp/backup_meta.tar --env FN=$backup_meta alpine sh -c 'cp /tmp/backup_meta.tar /mnt/$FN' 
+ 
+#verify that the backup was saved 
+docker run --rm -v{{ site_backup_volume_name }}:/mnt alpine sh -c 'ls -lrt /mnt' 

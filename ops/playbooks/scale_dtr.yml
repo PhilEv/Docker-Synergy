@@ -1,0 +1,73 @@
+###
+# Copyright (2017) Hewlett Packard Enterprise Development LP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+---
+- hosts: dtr:!dtr_main
+  serial: 1
+  gather_facts: false
+
+  vars_files:
+    - ../group_vars/vars
+    - ../group_vars/vault
+    - ../group_vars/backups
+
+  vars:
+    http_proxy_switch:  "{% if  env.http_proxy is defined %} --http-proxy {{ env.http_proxy }} {% endif %}"
+    https_proxy_switch:  "{% if  env.https_proxy is defined %} --https-proxy {{ env.https_proxy }} {% endif %}"
+    no_proxy_switch:  "{% if  env.no_proxy is defined %} --no-proxy '{{ env.no_proxy }}' {% endif %}"
+
+  roles:
+    - role: worker
+      ARG_UCP_IP: "{{groups.ucp_lb[0]}}.{{domain_name}}"
+      ARG_UCP_USER: "{{ucp_username}}"
+      ARG_UCP_PASSWORD: "{{ucp_password}}"
+      ARG_ADVERTIZE_IP: "{{ hostvars[groups.ucp_main[0]]['ip_addr'] | ipaddr('address')}}:2377"
+    - get-dtr-replica
+
+  tasks:
+
+    - name: Scale DTR allow some time to the UCP agent
+      command: sleep 180
+
+    - name: "Poll DTR on {{ inventory_hostname }}" 
+      uri:
+        url: https://{{ inventory_hostname }}.{{ domain_name }}/login
+        validate_certs: no
+        return_content: yes
+        status_code: 200,111,-1
+      register: webpage
+
+    - name: See if there is a DTR replica running on this node
+      set_fact:
+        dtr_is_there: "{% if 'Docker Trusted Registry' in webpage.content %}true{% else %}false{% endif %}"
+
+#
+# existing_dtr_replica_id is returned by the role get-dtr-replica
+#
+
+    - name: Add DTR nodes
+      command: docker run docker/dtr:{{ dtr_version }} join |
+        --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
+        --ucp-url https://{{ groups.ucp_main[0] }}.{{ domain_name }} 
+        --ucp-username {{ ucp_username }} 
+        --ucp-password {{ ucp_password }} 
+        --ucp-insecure-tls --existing-replica-id {{ existing_dtr_replica_id }}
+      register: task_result
+#      until: task_result.rc == 0
+#      retries: 1
+#      delay: 60
+      when: not dtr_is_there and existing_dtr_replica_id != 0
+
+
