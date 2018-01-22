@@ -39,11 +39,12 @@
       ARG_UCP_USER: "{{ucp_username}}"
       ARG_UCP_PASSWORD: "{{ucp_password}}"
       ARG_ADVERTIZE_IP: "{{ hostvars[groups.ucp_main[0]]['ip_addr'] | ipaddr('address')}}:2377"
+      worker_join_delay: 180
 
   tasks:
 
-    - name: "Ignite DTR: wait for the UCP Agent to be fully installed"
-      command: sleep 300
+#    - name: Allow the node to join the swarm
+#      wait_for: timeout=300
 
     - name: Install first DTR node
       command: docker run --rm docker/dtr:{{ dtr_version }} install --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} --ucp-node {{ inventory_hostname }}.{{ domain_name }} --ucp-insecure-tls --dtr-external-url https://{{ dtr_lb }} --ucp-url https://{{ ucp_main }} --ucp-username {{ ucp_username }} --ucp-password {{ ucp_password }}  {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}

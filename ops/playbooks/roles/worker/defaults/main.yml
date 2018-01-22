@@ -15,6 +15,11 @@
 ### 
 ---
 
+#
+# allow some time for a worker node to join the UCP swarm 
+#
+worker_join_delay: 60
+
 role_ports:
   - 80/tcp
   - 443/tcp

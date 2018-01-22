@@ -34,12 +34,14 @@
       ARG_UCP_USER: "{{ucp_username}}"
       ARG_UCP_PASSWORD: "{{ucp_password}}"
       ARG_ADVERTIZE_IP: "{{ hostvars[groups.ucp_main[0]]['ip_addr'] | ipaddr('address')}}:2377"
+      worker_join_delay: 180
+
     - get-dtr-replica
 
   tasks:
 
-    - name: Scale DTR allow some time to the UCP agent
-      command: sleep 180
+#    - name: Allow the node to join the swarm
+#      wait_for: timeout="{{ worker_join_delay }}"
 
     - name: "Poll DTR on {{ inventory_hostname }}" 
       uri:

@@ -91,3 +91,8 @@
 #         advaddr:  "{{ ip_addr | ipaddr('address') }}"
 #      register: resp
 #      when: swarm_member == false
+
+    - name: Allow the node to join the swarm
+      wait_for: timeout="{{ worker_join_delay }}"
+      when: swarm_member == false
+
