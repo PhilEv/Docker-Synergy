@@ -13,9 +13,9 @@
 - include: playbooks/docker_post_config.yml
 - include: playbooks/install_nfs_server.yml
 - include: playbooks/install_nfs_clients.yml
-- include: playbooks/ignite_ucp.yml
+- include: playbooks/create_main_ucp.yml
 - include: playbooks/scale_ucp.yml
-- include: playbooks/ignite_dtr.yml
+- include: playbooks/create_main_dtr.yml
 - include: playbooks/scale_workers.yml
 - include: playbooks/install_logspout.yml
 - include: playbooks/config_scheduler.yml
