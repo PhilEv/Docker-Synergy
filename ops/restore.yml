@@ -7,7 +7,7 @@
 #- include: playbooks/distribute_keys.yml
 #- include: playbooks/config_subscription.yml
 - include: playbooks/install_haproxy.yml
-- include: playbooks/install_ntp.yml
+- include: playbooks/config_ntp.yml
 - include: playbooks/install_docker.yml
 - include: playbooks/install_rsyslog.yml
 - include: playbooks/config_docker_lvs.yml
