@@ -22,33 +22,33 @@
     with_items:
       - libsemanage-python
       - libselinux-python
-    environment: "{{ chris7444_haproxy_env }}"
-    delegate_to: "{{ chris7444_haproxy_server }}"
+    environment: "{{ hpe_haproxy_env }}"
+    delegate_to: "{{ hpe_haproxy_server }}"
 
   - name: Enable HAPROXY to open non standard ports
     seboolean:
       name: haproxy_connect_any
       state: yes
       persistent: yes
-    delegate_to: "{{ chris7444_haproxy_server }}"
+    delegate_to: "{{ hpe_haproxy_server }}"
 
   - name: Install haproxy
     yum:
       name: haproxy
       state: latest
-    environment: "{{ chris7444_haproxy_env }}"
-    delegate_to: "{{ chris7444_haproxy_server }}"
+    environment: "{{ hpe_haproxy_env }}"
+    delegate_to: "{{ hpe_haproxy_server }}"
 
   - name: Copy HA proxy file fragments
     copy:
       src: files/
       dest: /etc/haproxy/fragments
     notify: Rebuild haproxy.cfg
-    delegate_to: "{{ chris7444_haproxy_server }}"
+    delegate_to: "{{ hpe_haproxy_server }}"
 
   - name: update file fragments
     template:
       src: templates/30-ucp-backends.j2
       dest: "/etc/haproxy/fragments/30-ucp-backends.{{ inventory_hostname }}"
     notify: Rebuild haproxy.cfg
-    delegate_to: "{{ chris7444_haproxy_server }}"
+    delegate_to: "{{ hpe_haproxy_server }}"

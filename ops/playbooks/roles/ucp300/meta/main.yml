@@ -1,8 +1,8 @@
 ---
 allow_duplicates: no
 dependencies:
-  - role: chris7444.openports
-    chris7444_openports_ports:
+  - role: hpe.openports
+    hpe_openports_ports:
       - 443/tcp
       - 2376/tcp
       - 2377/tcp

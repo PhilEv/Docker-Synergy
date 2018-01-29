@@ -15,6 +15,15 @@
 ### 
 ---
 
-chris7444_openports_ports:
-  - 81/tcp
-  - 443/tcp
+  - name: Rebuild haproxy.cfg
+    delegate_to: "{{ hpe_haproxy_server }}"
+    assemble:
+      dest: /etc/haproxy/haproxy.cfg
+      src: /etc/haproxy/fragments
+    notify: Restart HA Proxy
+
+  - name: Restart HA Proxy
+    delegate_to: svt2-ucp.am2.cloudra.local
+    systemd:
+      name: haproxy
+      state: restarted

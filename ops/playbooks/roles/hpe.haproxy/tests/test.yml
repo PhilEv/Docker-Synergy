@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - chris7444.openports
+    - hpe.haproxy

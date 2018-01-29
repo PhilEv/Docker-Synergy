@@ -15,15 +15,11 @@
 ### 
 ---
 
-  - name: Rebuild haproxy.cfg
-    delegate_to: "{{ chris7444_haproxy_server }}"
-    assemble:
-      dest: /etc/haproxy/haproxy.cfg
-      src: /etc/haproxy/fragments
-    notify: Restart HA Proxy
+    - name: Open  ports  in the firewall
+      firewalld:
+        port: "{{ item }}"
+        immediate: true
+        permanent: true
+        state: enabled
+      with_items: "{{ hpe_openports_ports }}"
 
-  - name: Restart HA Proxy
-    delegate_to: svt2-ucp.am2.cloudra.local
-    systemd:
-      name: haproxy
-      state: restarted

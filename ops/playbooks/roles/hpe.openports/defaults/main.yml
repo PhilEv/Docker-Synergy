@@ -15,11 +15,6 @@
 ### 
 ---
 
-    - name: Open  ports  in the firewall
-      firewalld:
-        port: "{{ item }}"
-        immediate: true
-        permanent: true
-        state: enabled
-      with_items: "{{ chris7444_openports_ports }}"
-
+hpe_openports_ports:
+  - 81/tcp
+  - 443/tcp
