@@ -43,12 +43,30 @@
 
   tasks:
 
-#    - name: Allow the node to join the swarm
-#      wait_for: timeout=300
+    - name: Is DTR running
+      block:
+        - name: Is DTR running ?
+          uri:
+            url: "https://{{ inventory_hostname }}.{{ domain_name }}/api/v0/meta/cluster_status"
+            method: GET
+            user: "{{ ucp_username }}"
+            password: "{{ ucp_password }}"
+            status_code: 200
+            body_format: json
+            force_basic_auth: yes
+            validate_certs: no
+          register: resp
+        - set_fact: dtr_is_running=True
+      rescue:
+        - set_fact: dtr_is_running=False
+
+    - debug: msg="DTR is running "
+      when: dtr_is_running  == True
+
 
     - name: Install first DTR node
       command: docker run --rm docker/dtr:{{ dtr_version }} install --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} --ucp-node {{ inventory_hostname }}.{{ domain_name }} --ucp-insecure-tls --dtr-external-url https://{{ dtr_lb }} --ucp-url https://{{ ucp_main }} --ucp-username {{ ucp_username }} --ucp-password {{ ucp_password }}  {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
-      when: inventory_hostname in groups.dtr_main
+      when: inventory_hostname in groups.dtr_main and dtr_is_running == False
       register: dtrlog
       until: dtrlog.rc == 0
       retries: 20
@@ -66,4 +84,5 @@
         body_format: json
         force_basic_auth: yes
         validate_certs: no
-      when: inventory_hostname in groups.dtr_main
+      when: inventory_hostname in groups.dtr_main and dtr_is_running == False
+
