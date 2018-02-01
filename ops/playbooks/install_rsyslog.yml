@@ -24,14 +24,14 @@
 
   environment: "{{ env }}"
 
-  tasks:
-    - name: Open required ports for rsyslog
-      command: firewall-cmd --permanent --zone=public --add-port=514/tcp --add-port=514/udp
+  roles:
+    - role: hpe.openports
+      hpe_openports_ports:
+        - 514/tcp
+        - 514/udp
       when: inventory_hostname in groups.logger
 
-    - name: Reload firewalld configuration
-      command: firewall-cmd --reload
-      when: inventory_hostname in groups.logger
+  tasks:
 
     - name: Install rsyslog
       yum:

@@ -23,7 +23,7 @@
     notify: Restart HA Proxy
 
   - name: Restart HA Proxy
-    delegate_to: svt2-ucp.am2.cloudra.local
+    delegate_to: "{{ hpe_ha_proxy_server }}"
     systemd:
       name: haproxy
       state: restarted

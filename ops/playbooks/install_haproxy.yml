@@ -24,12 +24,12 @@
 
   environment: "{{ env }}"
 
+  roles:
+    - role: hpe.openports
+      hpe_openports_ports:
+        - 80/tcp
+        - 443/tcp
   tasks:
-    - name: Open http and https ports
-      command: firewall-cmd --permanent --zone=public --add-port=80/tcp --add-port=443/tcp
-
-    - name: Reload firewalld configuration
-      command: firewall-cmd --reload
 
     - name: Install Required Pkgs for seboolean module
       yum:

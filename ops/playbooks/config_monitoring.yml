@@ -24,12 +24,19 @@
 
   environment: "{{ env }}"
 
-  tasks:
-    - name: Open required ports for Grafana and Prometheus
-      command: firewall-cmd --permanent --zone=public --add-port=9090/tcp --add-port=3000/tcp
+  roles:
+    - role: hpe.openports
+      hpe_openports_ports:
+        - 3000/tcp
+      when: inventory_hostname in groups.ucp_lb
 
-    - name: Reload firewalld configuration
-      command: firewall-cmd --reload
+
+  tasks:
+#    - name: Open required ports for Grafana and Prometheus
+#      command: firewall-cmd --permanent --zone=public --add-port=9090/tcp --add-port=3000/tcp
+#
+#    - name: Reload firewalld configuration
+#      command: firewall-cmd --reload
 
     - name: Copy monitoring files to UCP
       copy: 
