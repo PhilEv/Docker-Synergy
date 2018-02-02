@@ -14,7 +14,8 @@
 # limitations under the License.
 ###
 ---
-- hosts: ucp:!ucp_main
+#- hosts: ucp:!ucp_main
+- hosts: ucp
   gather_facts: false
 
   vars_files:

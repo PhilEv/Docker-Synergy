@@ -24,37 +24,55 @@
 
   environment: "{{ env }}"
 
+  roles:
+    - role: hpe.openports
+      hpe_openports_ports:
+        - 2049/tcp
+        - 2049/udp
+        - 111/tcp
+        - 111/udp
+        - 54302/tcp
+        - 54302/udp
+        - 20048/tcp
+        - 20248/udp
+        - 46666/tcp
+        - 46666/udp
+        - 42955/tcp
+        - 42955/udp
+        - 875/tcp
+        - 875/udp
+        
   tasks:
-    - name: Open required ports
-      command: firewall-cmd --permanent --zone=public --add-port=2049/tcp --add-port=2049/udp --add-port=111/tcp --add-port=111/udp --add-port=54302/tcp --add-port=54302/udp --add-port=20048/tcp --add-port=20048/udp --add-port=46666/tcp --add-port=46666/udp --add-port=42955/tcp --add-port=42955/udp --add-port=875/tcp --add-port=875/udp
-
-    - name: Reload firewalld configuration
-      command: firewall-cmd --reload
 
     - name: Check for partitions on disk
-      shell: parted -s {{ disk2 }} print 1
-      register: partPresent
-      failed_when: partPresent.rc is not defined
+      parted:
+        state: info
+        device: "{{ disk2 }}"
+        number: 1
+      register: DiskInfo
+
+    - set_fact:
+        partPresent: "{{ DiskInfo.partitions[0] is defined }}"
 
     - name: Create partition on second disk
       parted:
         device: "{{ disk2 }}"
         number: 1
         state: present    
-      when: partPresent.rc != 0
+      when: partPresent == false
 
     - name: Create filesystem
       filesystem:
         fstype: xfs
         dev: "{{ disk2_part }}"
-      when: partPresent.rc != 0
+      when: partPresent == false
 
     - name: Create images folder
       file:
         path: "{{ images_folder }}"
         state: directory
         mode: 0777
-      when: partPresent.rc != 0
+      when: partPresent == false
 
     - name: Mount filesystem
       mount:
@@ -84,6 +102,9 @@
 
     - name: Modify exports file on NFS server
       template: src=../templates/exports.j2 dest=/etc/exports
+      notify: RefreshExportFS
 
-    - name: Refresh exportfs
+  handlers: 
+
+    - name: RefreshExportFS
       command: exportfs -a

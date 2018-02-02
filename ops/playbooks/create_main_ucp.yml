@@ -50,23 +50,39 @@
 
   tasks:
 
-    - name: Check if node already belongs to the swarm
-      shell: docker info | grep "Swarm{{":"}} inactive" | wc -l
-      register: swarm_inactive
+#
+# Try to ping UCP, if it is there, healthy or not, we should not try to install UCP
+#
+    - set_fact: ucp_is_running=false
+    - name: Ping UCP
+      uri:
+        url: "https://{{ inventory_hostname }}/_ping"
+        headers:
+          Content-Type: application/json
+        method: GET
+        status_code: 200,500
+        validate_certs: no
+      register: res
+      ignore_errors: yes
+    - debug: var=res
+    - set_fact: ucp_is_running=true
+      when: res.status == 200 or res.status == 500
 
-    - debug:
-        var: swarm_inactive
+    - debug: var=ucp_is_running
       when: _debug is defined
 
     - name: Copy the license
       copy: src="{{ license_file }}" dest="/tmp/{{ license_file | basename }}"
 
+#
+# Install UCP if needed
+#
     - name: Install swarm leader and first UCP node
       shell: docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:{{ ucp_version }} install --host-address {{ ip_addr | ipaddr('address') }}  --admin-username={{ ucp_username }} --admin-password={{ ucp_password }} --license "$(cat /tmp/{{ license_file | basename }})" --san "{{ groups['ucp_lb'][0] }}.{{ domain_name }}"
       register: output
-      when: inventory_hostname in groups.ucp_main and swarm_inactive.stdout == "1"
+      when: ucp_is_running == false
 
     - debug:
         var: output
-      when: _debug is defined
+      when: _debug is defined and ucp_is_running == false
 
