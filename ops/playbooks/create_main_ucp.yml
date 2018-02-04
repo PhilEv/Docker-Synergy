@@ -63,7 +63,7 @@
         status_code: 200,500
         validate_certs: no
       register: res
-      ignore_errors: yes
+      failed_when: false
     - debug: var=res
     - set_fact: ucp_is_running=true
       when: res.status == 200 or res.status == 500

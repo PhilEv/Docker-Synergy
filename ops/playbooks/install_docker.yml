@@ -62,12 +62,12 @@
     - name: Add Docker repository
       command: yum-config-manager --add-repo {{ docker_ee_url }}/rhel/docker-ee.repo
 
-    - name: Install Docker
-      yum:
-        name: docker-ee
-        enablerepo: docker-ee-test-18.01
-        state: latest
-        update_cache: yes
+#    - name: Install Docker
+#      yum:
+#        name: docker-ee
+#        enablerepo: docker-ee-test-18.01
+#        state: latest
+#        update_cache: yes
 
     - name: Ensure Docker is started
       systemd:

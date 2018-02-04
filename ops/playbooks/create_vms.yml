@@ -35,7 +35,7 @@
         validate_certs: "{{ vcenter_validate_certs }}"
         esxi_hostname: "{{ esxi_host }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ folder_name }}"
+        folder: "{{ datacenter }}/vm{{ folder_name }}"
         name: "{{ inventory_hostname }}"
         template: "{{ vm_template }}"
         state: poweredon
@@ -56,7 +56,7 @@
         validate_certs: "{{ vcenter_validate_certs }}"
         esxi_hostname: "{{ esxi_host }}"
         datacenter: "{{ datacenter }}"
-        folder: "{{ folder_name }}"
+        folder: "{{ datacenter }}/vm{{ folder_name }}"
         name: "{{ inventory_hostname }}"
         template: "{{ vm_template }}"
         state: poweredon
