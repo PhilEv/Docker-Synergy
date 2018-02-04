@@ -6,11 +6,12 @@ vcenter_validate_certs: 'no'
 datacenter: 'DC_CLH'
 vm_username: 'root'
 vm_template: 'syn-tpl-rhel740'
+# the folder name is understood relative to the selected datacenter
 folder_name: '/clh'
 datastores: ['Docker2_CLH']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
-vsphere_plugin_version: '0.20' # was 0.17
+vsphere_plugin_version: '0.20' 
 
 # Networking
 nic_name: 'ens192'
@@ -21,6 +22,9 @@ ntp_servers: ['10.60.1.123','0.us.pool.net.org','1.us.pool.net.org']
 
 # Docker configuration
 # docker_ee_url: is defined in group_vars/vault, should be kept secret
+#
+# by default, the latest, stable version of docker-ee is installed, but you can specify the version you want (which is recommended)
+# docker_ee_version: 'docker-ee-17.06.2.ee.6-3.el7.rhel.x86_64'
 rhel_version: '7.4'
 #dtr_version: '2.4.0'
 dtr_version: 'latest'

@@ -47,6 +47,7 @@
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
       when: disk2_size is undefined
+      notify: CreateVMsWait
 
     - name: Create VMs with a data drive
       vmware_guest:
@@ -73,7 +74,9 @@
       vars:
           datastore: "{{ datastores | random }}"
       when: disk2_size is defined
+      notify: CreateVMsWait
 
-    - name: Wait for VMs to boot up
+  handlers:
+    - name: CreateVMsWait
       pause:
         minutes: 3
