@@ -6,6 +6,8 @@ vcenter_validate_certs: 'no'
 datacenter: 'DC_CLH'
 vm_username: 'root'
 vm_template: 'syn-tpl-rhel740'
+vm_portgroup: dpgVLAN60
+
 # the folder name is understood relative to the selected datacenter
 folder_name: '/clh'
 datastores: ['Docker2_CLH']

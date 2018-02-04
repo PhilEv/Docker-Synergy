@@ -39,6 +39,15 @@
         name: "{{ inventory_hostname }}"
         template: "{{ vm_template }}"
         state: poweredon
+        networks:
+          - name: "{{ vm_portgroup }}"
+            ip: "{{ ip_addr | ipaddr('address') }}"
+            netmask: "{{ ip_addr | ipaddr('netmask') }}"
+            gateway: "{{ gateway }}"
+        customization:
+          dns_servers: "{{ dns }}"
+          domain: "{{ domain_name }}"
+#          hostname: "{{ inventory_hostname }}.{{ domain_name }}"
         disk:
           - size_gb:  "{{ disk1_size }}"
             type: thin
@@ -46,6 +55,7 @@
         hardware:
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
+        wait_for_ip_address: yes
       when: disk2_size is undefined
       notify: CreateVMsWait
 
@@ -61,6 +71,15 @@
         name: "{{ inventory_hostname }}"
         template: "{{ vm_template }}"
         state: poweredon
+        networks:
+          - name: "{{ vm_portgroup }}"
+            ip: "{{ ip_addr | ipaddr('address') }}"
+            netmask: "{{ ip_addr | ipaddr('netmask') }}"
+            gateway: "{{ gateway }}"
+        customization:
+          dns_servers: "{{ dns }}"
+          domain: "{{ domain_name }}"
+#          hostname: "{{ inventory_hostname }}.{{ domain_name }}"
         disk:
           - size_gb:  "{{ disk1_size }}"
             type: thin
@@ -71,6 +90,7 @@
         hardware:
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
+        wait_for_ip_address: yes
       vars:
           datastore: "{{ datastores | random }}"
       when: disk2_size is defined
@@ -79,4 +99,4 @@
   handlers:
     - name: CreateVMsWait
       pause:
-        minutes: 3
+        seconds: 10

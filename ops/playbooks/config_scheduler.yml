@@ -22,23 +22,26 @@
     - ../group_vars/vars
     - ../group_vars/vault
 
-  vars:
-    ARG_UCP_IP: "{{groups.ucp_lb[0]}}.{{domain_name}}"
-    ARG_UCP_USER: "admin"
-    ARG_UCP_PASSWORD: "{{ucp_password}}"
-
   tasks:
+
+#
+# find out an UCP VM that works
+#
+    - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
+    - debug: var=ucp_instance
+      when: _debug is defined
+
 
     - name: Retrieve a token for the UCP API
       uri:
-        url: "https://{{ ARG_UCP_IP }}/auth/login"
+        url: "https://{{ ucp_instance }}.{{ domain_name }}/auth/login"
         headers:
           Content-Type: application/json
         method: POST
         status_code: 200
         body_format: json
         validate_certs: no
-        body: '{"username":"{{ ARG_UCP_USER }}","password":"{{ ARG_UCP_PASSWORD }}"}'
+        body: '{"username":"{{ ucp_username }}","password":"{{ ucp_password }}"}'
         use_proxy: no
       register: login
       until: login.status == 200
@@ -51,7 +54,7 @@
 
     - name: Retrieve Docker-Datacenter Org ID
       uri:
-        url: "https://{{ ARG_UCP_IP}}/accounts/?filter=orgs&limit=100&contains=docker-datacenter"
+        url: "https://{{ ucp_instance}}.{{ domain_name }}/accounts/?filter=orgs&limit=100&contains=docker-datacenter"
         headers:
           Content-Type: application/json
           Authorization: Bearer {{ auth_token }}
@@ -70,7 +73,7 @@
 
     - name: Do not let users schedule on all nodes
       uri:
-        url: "https://{{ ARG_UCP_IP }}/collectionGrants/{{orgid}}/swarm/scheduler" 
+        url: "https://{{ ucp_instance }}.{{ domain_name }}/collectionGrants/{{orgid}}/swarm/scheduler" 
         headers:
           accept: application/json
           Authorization: Bearer {{auth_token}}

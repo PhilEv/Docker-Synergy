@@ -92,7 +92,7 @@
 #      register: resp
 #      when: swarm_member == false
 
-    - name: Allow the node to join the swarm
+    - name: Allow some time for the node to join the swarm
       wait_for: timeout="{{ worker_join_delay }}"
       when: swarm_member == false
 

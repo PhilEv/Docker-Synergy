@@ -51,28 +51,15 @@
   tasks:
 
 #
-# Try to ping UCP, if it is there, healthy or not, we should not try to install UCP
+# Is UCP installed in the cluster
 #
-    - set_fact: ucp_is_running=false
-    - name: Ping UCP
-      uri:
-        url: "https://{{ inventory_hostname }}/_ping"
-        headers:
-          Content-Type: application/json
-        method: GET
-        status_code: 200,500
-        validate_certs: no
-      register: res
-      failed_when: false
-    - debug: var=res
-    - set_fact: ucp_is_running=true
-      when: res.status == 200 or res.status == 500
-
-    - debug: var=ucp_is_running
+    - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
+    - debug: var=ucp_instance
       when: _debug is defined
 
     - name: Copy the license
       copy: src="{{ license_file }}" dest="/tmp/{{ license_file | basename }}"
+      when: ucp_instance == ".none."
 
 #
 # Install UCP if needed
@@ -80,9 +67,9 @@
     - name: Install swarm leader and first UCP node
       shell: docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:{{ ucp_version }} install --host-address {{ ip_addr | ipaddr('address') }}  --admin-username={{ ucp_username }} --admin-password={{ ucp_password }} --license "$(cat /tmp/{{ license_file | basename }})" --san "{{ groups['ucp_lb'][0] }}.{{ domain_name }}"
       register: output
-      when: ucp_is_running == false
+      when: ucp_instance == ".none."
 
     - debug:
         var: output
-      when: _debug is defined and ucp_is_running == false
+      when: _debug is defined and ucp_instance == ".none."
 

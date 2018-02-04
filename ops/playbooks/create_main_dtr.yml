@@ -33,12 +33,17 @@
     https_proxy_switch:  "{% if  env.https_proxy is defined %} --https-proxy {{ env.https_proxy }} {% endif %}"
     no_proxy_switch:  "{% if  env.no_proxy is defined %} --no-proxy '{{ env.no_proxy }}' {% endif %}"
 
+  pre_tasks:
+    - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
+    - debug: var=ucp_instance
+      when: _debug is defined
+
   roles:
     - role: worker
-      ARG_UCP_IP: "{{groups.ucp_lb[0]}}.{{domain_name}}"
-      ARG_UCP_USER: "{{ucp_username}}"
-      ARG_UCP_PASSWORD: "{{ucp_password}}"
-      ARG_ADVERTIZE_IP: "{{ hostvars[groups.ucp_main[0]]['ip_addr'] | ipaddr('address')}}:2377"
+      ARG_UCP_IP:        "{{ ucp_instance }}.{{ domain_name }}"
+      ARG_UCP_USER:      "{{ ucp_username }}"
+      ARG_UCP_PASSWORD:  "{{ ucp_password }}"
+      ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
       worker_join_delay: 60
 
   tasks:
