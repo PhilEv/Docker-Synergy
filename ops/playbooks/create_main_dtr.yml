@@ -26,6 +26,7 @@
 
   vars:
     dtr_lb: "{{ groups['dtr_lb'][0] }}.{{ domain_name }}"
+    ucp_lb: "{{ groups['ucp_lb'][0] }}.{{ domain_name }}"
     ucp_main: "{{ groups['ucp_main'][0] }}.{{ domain_name }}"
     dtr_main: "{{ groups['dtr_main'][0] }}"
     nfs_server: "{{ hostvars[groups['nfs'][0]].ip_addr | ipaddr('address') }}"
@@ -51,30 +52,25 @@
 #
 # Is DTR running ?
 #
-    - set_fact: dtr_is_running=False
-    - name: Is DTR running
-      uri:
-        url: "https://{{ inventory_hostname }}.{{ domain_name }}/api/v0/meta/cluster_status"
-        method: GET
-        user: "{{ ucp_username }}"
-        password: "{{ ucp_password }}"
-        status_code: 200
-        body_format: json
-        force_basic_auth: yes
-        validate_certs: no
-      ignore_errors: yes
-      register: res
-    - set_fact: dtr_is_running=True
-      when: res.status == 200 or res.status == 500
-    - debug: msg="DTR is running "
-      when: dtr_is_running  == True
+    - include_tasks: includes/find_dtr.yml ping_servers="{{ groups.dtr }}" 
+#
+# if DTR is running, log something
+#
+    - name: "Create Main DTR: DTR Already running in this environment" 
+      debug: msg="DTR is running on {{ dtr_instance }}" 
+      when: dtr_instance != ".none." 
 
 #
-# Install DTR if it is not running
+# Install DTR if it is not running, 
 #
+
+#
+# Important note: --ucp-url must point to the load balancer or dtr will fail to authenticate users if this url points to a specific UCP VM and this VM fails
+#
+
     - name: Install first DTR node
-      command: docker run --rm docker/dtr:{{ dtr_version }} install --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} --ucp-node {{ inventory_hostname }}.{{ domain_name }} --ucp-insecure-tls --dtr-external-url https://{{ dtr_lb }} --ucp-url https://{{ ucp_main }} --ucp-username {{ ucp_username }} --ucp-password {{ ucp_password }}  {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
-      when: dtr_is_running == False
+      command: docker run --rm docker/dtr:{{ dtr_version }} install --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} --ucp-node {{ inventory_hostname }}.{{ domain_name }} --ucp-insecure-tls --dtr-external-url https://{{ dtr_lb }} --ucp-url https://{{ ucp_lb }} --ucp-username {{ ucp_username }} --ucp-password {{ ucp_password }}  {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
+      when: dtr_instance == ".none." 
       register: dtrlog
       until: dtrlog.rc == 0
       retries: 20
@@ -94,5 +90,5 @@
         body_format: json
         force_basic_auth: yes
         validate_certs: no
-      when: dtr_is_running == False
+      when: dtr_instance == ".none." 
 

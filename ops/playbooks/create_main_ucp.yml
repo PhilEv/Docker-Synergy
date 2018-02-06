@@ -73,3 +73,6 @@
         var: output
       when: _debug is defined and ucp_instance == ".none."
 
+    - debug: 
+        msg: "An UCP instance was found at {{ ucp_instance }}.{{ domain_name }}"
+      when: ucp_instance != ".none." 

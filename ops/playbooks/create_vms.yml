@@ -55,7 +55,7 @@
         hardware:
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
-        wait_for_ip_address: yes
+#        wait_for_ip_address: yes
       when: disk2_size is undefined
       notify: CreateVMsWait
 
@@ -90,7 +90,7 @@
         hardware:
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
-        wait_for_ip_address: yes
+#        wait_for_ip_address: yes
       vars:
           datastore: "{{ datastores | random }}"
       when: disk2_size is defined
@@ -98,5 +98,6 @@
 
   handlers:
     - name: CreateVMsWait
-      pause:
-        seconds: 10
+      wait_for_connection:
+        delay: 60
+        timeout: 300
