@@ -43,7 +43,7 @@
       ARG_UCP_USER:      "{{ ucp_username }}"
       ARG_UCP_PASSWORD:  "{{ ucp_password }}"
       ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
-      worker_join_delay: 60
+      worker_join_delay: 180
 
   tasks:
 
@@ -71,11 +71,10 @@
         --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }}
         --ucp-node {{ inventory_hostname }}.{{ domain_name }}
         --ucp-insecure-tls
-        --dtr-external-url https://{{ dtr_lb }}
-        --ucp-url https://{{ ucp_lb }}
+        --dtr-external-url https://{{ groups.dtr_lb[0] }}.{{ domain_name }}
+        --ucp-url https://{{ groups.ucp[0] }}.{{ domain_name }}
         --ucp-username {{ ucp_username }}
-        --ucp-password {{ ucp_password }}
-        {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
+        --ucp-password {{ ucp_password }} {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
       when: dtr_instance == ".none." 
       register: dtrlog
 #      until: dtrlog.rc == 0
