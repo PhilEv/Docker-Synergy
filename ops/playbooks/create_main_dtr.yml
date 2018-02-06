@@ -27,8 +27,6 @@
   vars:
     dtr_lb: "{{ groups['dtr_lb'][0] }}.{{ domain_name }}"
     ucp_lb: "{{ groups['ucp_lb'][0] }}.{{ domain_name }}"
-    ucp_main: "{{ groups['ucp_main'][0] }}.{{ domain_name }}"
-    dtr_main: "{{ groups['dtr_main'][0] }}"
     nfs_server: "{{ hostvars[groups['nfs'][0]].ip_addr | ipaddr('address') }}"
     http_proxy_switch:  "{% if  env.http_proxy is defined %} --http-proxy {{ env.http_proxy }} {% endif %}"
     https_proxy_switch:  "{% if  env.https_proxy is defined %} --https-proxy {{ env.https_proxy }} {% endif %}"
@@ -69,7 +67,15 @@
 #
 
     - name: Install first DTR node
-      command: docker run --rm docker/dtr:{{ dtr_version }} install --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} --ucp-node {{ inventory_hostname }}.{{ domain_name }} --ucp-insecure-tls --dtr-external-url https://{{ dtr_lb }} --ucp-url https://{{ ucp_lb }} --ucp-username {{ ucp_username }} --ucp-password {{ ucp_password }}  {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
+      command: docker run --rm docker/dtr:{{ dtr_version }} install |
+        --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} |
+        --ucp-node {{ inventory_hostname }}.{{ domain_name }} |
+        --ucp-insecure-tls |
+        --dtr-external-url https://{{ dtr_lb }} |
+        --ucp-url https://{{ ucp_lb }} |
+        --ucp-username {{ ucp_username }} |
+        --ucp-password {{ ucp_password }}  |
+        {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
       when: dtr_instance == ".none." 
       register: dtrlog
       until: dtrlog.rc == 0

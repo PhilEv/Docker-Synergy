@@ -65,10 +65,10 @@
 # existing_dtr_replica_id is returned by the role get-dtr-replica
 #
 
-    - name: Add DTR nodes
+    - name: Join DTR nodes
       command: docker run docker/dtr:{{ dtr_version }} join |
         --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
-        --ucp-url https://{{ groups.ucp_main[0] }}.{{ domain_name }} 
+        --ucp-url https://{{ groups.ucp_lb[0] }}.{{ domain_name }} 
         --ucp-username {{ ucp_username }} 
         --ucp-password {{ ucp_password }} 
         --ucp-insecure-tls --existing-replica-id {{ existing_dtr_replica_id }}
