@@ -67,20 +67,20 @@
 #
 
     - name: Install first DTR node
-      command: docker run --rm docker/dtr:{{ dtr_version }} install |
-        --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }} |
-        --ucp-node {{ inventory_hostname }}.{{ domain_name }} |
-        --ucp-insecure-tls |
-        --dtr-external-url https://{{ dtr_lb }} |
-        --ucp-url https://{{ ucp_lb }} |
-        --ucp-username {{ ucp_username }} |
-        --ucp-password {{ ucp_password }}  |
+      command: docker run docker/dtr:{{ dtr_version }} install |
+        --nfs-storage-url nfs://{{ nfs_server }}{{ images_folder }}
+        --ucp-node {{ inventory_hostname }}.{{ domain_name }}
+        --ucp-insecure-tls
+        --dtr-external-url https://{{ dtr_lb }}
+        --ucp-url https://{{ ucp_lb }}
+        --ucp-username {{ ucp_username }}
+        --ucp-password {{ ucp_password }}
         {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }}
       when: dtr_instance == ".none." 
       register: dtrlog
-      until: dtrlog.rc == 0
-      retries: 20
-      delay: 20
+#      until: dtrlog.rc == 0
+#      retries: 2
+#      delay: 20
 
 #
 # Enable Image Scanning
