@@ -39,7 +39,7 @@
       ARG_UCP_USER:      "{{ ucp_username }}"
       ARG_UCP_PASSWORD:  "{{ ucp_password }}"
       ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
-      worker_join_delay: 120
+      worker_join_delay: 60
 
     - role: get-dtr-replica
       ARG_UCP_IP:        "{{ ucp_instance }}.{{domain_name}}"

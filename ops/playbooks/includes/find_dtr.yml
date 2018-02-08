@@ -42,12 +42,13 @@
   failed_when: false
   changed_when: false
   when: checks.status != 200 and checks.status != 401
-#  when: checks.status !=200
   with_items: "{{ ping_servers }}"
+  no_log: yes
 
 - set_fact: dtr_instance=".none."
 - name: "Find DTR: set dtr_instance" 
   set_fact: dtr_instance={{ item.item }}
   when: "'status' in item and item.status == 200"
   with_items: "{{ checks.results }}"
+  no_log: yes
 
