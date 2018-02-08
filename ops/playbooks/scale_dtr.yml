@@ -28,6 +28,10 @@
     https_proxy_switch:  "{% if  env.https_proxy is defined %} --https-proxy {{ env.https_proxy }} {% endif %}"
     no_proxy_switch:  "{% if  env.no_proxy is defined %} --no-proxy '{{ env.no_proxy }}' {% endif %}"
 
+  environment:
+    - UCP_USERNAME: "{{ ucp_username }}"
+    - UCP_PASSWORD: "{{ ucp_password }}"
+
   pre_tasks:
     - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
     - debug: var=ucp_instance
@@ -66,7 +70,7 @@
 #
 
     - name: Join DTR nodes
-      command: docker run docker/dtr:{{ dtr_version }} join |
+      command: docker run --env UCP_USERNAME --env UCP_PASSWORD docker/dtr:{{ dtr_version }} join |
         --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
         --ucp-url https://{{ groups.ucp[0] }}.{{ domain_name }} 
         --ucp-username {{ ucp_username }} 
