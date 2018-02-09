@@ -28,11 +28,11 @@
   changed_when: false
   when: checks.status !=200 and checks.status != 500 
   with_items: "{{ ping_servers }}"
-  no_logs: yes
+  no_log: yes
 
 - set_fact: ucp_instance=".none."
 - name: set ucp_instance
   set_fact: ucp_instance={{ item.item }}
   when: "'status' in item and item.status == 200"
   with_items: "{{ checks.results }}"
-  no_logs: yes
+  no_log: yes
