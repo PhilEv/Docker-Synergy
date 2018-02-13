@@ -21,3 +21,4 @@
 - import_playbook: playbooks/config_scheduler.yml
 - import_playbook: playbooks/config_monitoring.yml
 - import_playbook: playbooks/scale_dtr.yml
+- import_playbook: playbooks/reconfigure_dtr.yml
