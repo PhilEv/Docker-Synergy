@@ -45,7 +45,7 @@ prom_persistent_vol_name: 'clh-db-data'
 prom_persistent_vol_size: '10GB'
 
 # Central Logging configuration
-logspout_version: 'master'
+logspout_version: 'v3.2.4'
 
 # Environment configuration
 # Leave proxy settings empty if proxy is not required
