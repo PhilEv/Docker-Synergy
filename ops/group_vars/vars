@@ -36,6 +36,22 @@ images_folder: '/docker-images'
 license_file: '/root/license.lic'
 ucp_username: 'admin'
 
+#
+# certs dir
+#
+# if this variables are defined, they must point to a folder on the ansible box containing 3 files that the user should supply
+#    ca.pem is the file contaning the root CA certificate
+#    cert.pem is the file containing the server (UCP) certificate followed bythe chain of intermediate CA' certificates (if any)
+#    key.pem, contains the private key
+#
+# There is one folder for UCP, one folder for DTR
+#
+# if ucp_certs_dir is not defined, UCP generates self-signed certificates
+# if dtr_certs_dir is undefined, DTR is installed using the --ucp-insecure-tls switch
+
+ucp_certs_dir: '/root/certs/ucp_certs' 
+dtr_certs_dir: '/root/certs/dtr_certs'
+
 # Monitoring configuration
 cadvisor_version: 'v0.25.0'
 node_exporter_version: 'v1.14.0'

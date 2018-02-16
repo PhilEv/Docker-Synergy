@@ -111,6 +111,6 @@
 #      when: swarm_member == false
 
     - name: Sleep
-      wait_for: timeout=5
+      wait_for: timeout="{{ ucp_role_join_delay }}"
       delegate_to: localhost
       when: swarm_member == false

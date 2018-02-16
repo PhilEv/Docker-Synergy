@@ -20,6 +20,7 @@
   vars_files:
     - ../group_vars/vars
     - ../group_vars/vault
+    - includes/internal_vars.yml
 
   pre_tasks:
     - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
@@ -32,5 +33,6 @@
       ARG_UCP_USER:      "{{ ucp_username }}"
       ARG_UCP_PASSWORD:  "{{ ucp_password }}"
       ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
+      worker_role_ports: "{{ internal_worker_ports }}"
       worker_join_delay: 60
 

@@ -2,13 +2,4 @@
 allow_duplicates: no
 dependencies:
   - role: hpe.openports
-    hpe_openports_ports:
-      - 443/tcp
-      - 2376/tcp
-      - 2377/tcp
-      - 4789/tcp
-      - 4789/udp
-      - 7946/tcp
-      - 7946/udp
-      - 12376/tcp
-      - 12379-12387/tcp
+    hpe_openports_ports: "{{ ucp_role_ports }}"

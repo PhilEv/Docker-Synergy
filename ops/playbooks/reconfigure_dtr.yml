@@ -58,4 +58,25 @@
       when: existing_dtr_replica_id != 0
       delegate_to: "{{ ucp_instance }}" 
 
+#
+# find a working DTR instance
+#
+    - name: Find a DTR instance
+      include_tasks: includes/find_dtr.yml ping_servers="{{ groups.dtr }}"
+    - debug: var=dtr_instance
+#
+# Enable Image Scanning
+#
+    - name: Enable image scanning
+      uri:
+        url: "https://{{ dtr_instance }}.{{ domain_name }}/api/v0/meta/settings"
+        method: POST
+        user: "{{ ucp_username }}"
+        password: "{{ ucp_password }}"
+        body: {"scanningEnabled":true}
+        status_code: 202
+        body_format: json
+        force_basic_auth: yes
+        validate_certs: no
+      when: dtr_instance != ".none."
 
