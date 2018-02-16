@@ -49,8 +49,8 @@ ucp_username: 'admin'
 # if ucp_certs_dir is not defined, UCP generates self-signed certificates
 # if dtr_certs_dir is undefined, DTR is installed using the --ucp-insecure-tls switch
 
-ucp_certs_dir: '/root/certs/ucp_certs' 
-dtr_certs_dir: '/root/certs/dtr_certs'
+#ucp_certs_dir: '/root/certs/ucp_certs' 
+#dtr_certs_dir: '/root/certs/dtr_certs'
 
 # Monitoring configuration
 cadvisor_version: 'v0.25.0'
