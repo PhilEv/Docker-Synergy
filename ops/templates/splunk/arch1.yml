@@ -26,7 +26,8 @@ services:
       - "1514:1514"
   splunkuniversalforwarder:
 #    build: .
-    hostname: splunkuniversalforwarder
+#    hostname: "{{.Service.Name}}-{{.Task.Slot}}-{{.Node.Hostname}}"  .Node.Hostname in 17.10 according to https://github.com/moby/moby/issues/30966
+    hostname: "spuf-{{.Node.ID}}"
     image: splunk/universalforwarder:7.0.0-monitor
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
