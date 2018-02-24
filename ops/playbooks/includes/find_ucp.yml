@@ -23,6 +23,7 @@
     body_format: json
     validate_certs: no
     body: '{"username":"{{ ucp_username }}","password":"{{ ucp_password }}"}'
+  delegate_to: localhost
   register: checks
   failed_when: false
   changed_when: false
