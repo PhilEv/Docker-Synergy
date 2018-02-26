@@ -73,12 +73,10 @@
         force_basic_auth: yes
         validate_certs: no
       register: resp
-      when: swarm_member == false
 
     - name: Memorize the swarm's token
       set_fact:
         token:  "{{ resp.json.JoinTokens.Manager }}"
-      when: swarm_member == false
 
     - name: Add node to the swarm
       command: "docker swarm join --token {{ token }} {{ ARG_ADVERTIZE_IP }}"
@@ -110,7 +108,21 @@
 #      register: resp
 #      when: swarm_member == false
 
-    - name: Sleep
-      wait_for: timeout="{{ ucp_role_join_delay }}"
+    - name: Is the node already in the swarm
+      uri:
+        url: 'https://{{ ARG_UCP_IP }}/nodes/{{ inventory_hostname }}.{{ domain_name }}'
+        headers:
+          Content-Type: application/json
+          Authorization: Bearer {{ auth_token }}
+        method: GET
+        status_code: 200,404
+        body_format: json
+        validate_certs: no
       delegate_to: localhost
-      when: swarm_member == false
+      register: resp
+      until: resp.status == 200 and resp.json.Spec.Role == "manager" and resp.json.Status.State == "ready" 
+      delay: 10
+      retries:  "{{ ( ucp_role_join_delay  / 10 ) | int }}"
+
+    - debug: msg="Availability={{resp.json.Spec.Availability}} Role={{resp.json.Spec.Role}} State={{resp.json.Status.State}}"
+      when: _debug is defined
