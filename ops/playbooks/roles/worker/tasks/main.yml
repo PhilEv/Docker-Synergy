@@ -95,7 +95,22 @@
 #      register: resp
 #      when: swarm_member == false
 
-    - name: Allow some time for the node to join the swarm
-      wait_for: timeout="{{ worker_join_delay }}"
-      when: swarm_member == false
+    - name: Poll the status of the node
+      uri:
+        url: 'https://{{ ARG_UCP_IP }}/nodes/{{ inventory_hostname }}.{{ domain_name }}'
+        headers:
+          Content-Type: application/json
+          Authorization: Bearer {{ auth_token }}
+        method: GET
+        status_code: 200,404
+        body_format: json
+        validate_certs: no
+      delegate_to: localhost
+      register: resp
+      until: resp.status == 200 and resp.json.Spec.Role == "worker" and resp.json.Status.State == "ready"
+      delay: 10
+      retries:  "{{ ( worker_join_delay  / 10 ) | int }}"
+
+    - debug: msg="Availability={{resp.json.Spec.Availability}} Role={{resp.json.Spec.Role}} State={{resp.json.Status.State}}"
+      when: _debug is defined
 
