@@ -28,28 +28,19 @@ services:
       placement:
        constraints: [node.role == manager]
 
-  splunkuniversalforwarder:
-#    build: .
-#    hostname: "{{.Service.Name}}-{{.Task.Slot}}-{{.Node.Hostname}}"  .Node.Hostname in 17.10 according to https://github.com/moby/moby/issues/30966
-    hostname: "spuf-{{.Node.ID}}"
-    image: splunk/universalforwarder:7.0.0-monitor
+  splunkds:
+    hostname: splunkds
+    image: splunk/splunk:7.0.0-monitor
     environment:
-      SPLUNK_START_ARGS: --accept-license --answer-yes
-      SPLUNK_FORWARD_SERVER: splunkenterprise:9997
-      SPLUNK_USER: root
-      SPLUNK_ADD: "monitor /docker_host/log -auth admin:changeme"
-    volumes:
-      - vsplunkuf-opt-splunk-etc:/opt/splunk/etc
-      - vsplunkuf-opt-splunk-var:/opt/splunk/var      
-      - /var/lib/docker/containers:/host/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/log:/docker_host/log:ro
+      SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_ENABLE_DEPLOY_SERVER: "true" 
+    ports:
+      - "8001:8000"
+      - "8089:8089" 
     deploy:
-      mode: global
-    
+      placement:
+       constraints: [node.role == manager]
+
 volumes:
   vsplunk-opt-splunk-etc:
   vsplunk-opt-splunk-var:
-  vsplunkuf-opt-splunk-etc:
-  vsplunkuf-opt-splunk-var:
-
