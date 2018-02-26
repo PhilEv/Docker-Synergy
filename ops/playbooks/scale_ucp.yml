@@ -34,4 +34,4 @@
       ARG_UCP_PASSWORD:  "{{ ucp_password }}"
       ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
       ucp_role_ports:    "{{ internal_ucp_ports }}"
-      ucp_role_join_delay: 120
+      ucp_role_join_delay: 180
