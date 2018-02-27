@@ -99,10 +99,13 @@ node_policy='nm-gold'
 ucp
 dtr
 worker
-win_worker
 lbs
 nfs
 logger
+
+[all_vms:children]
+vms
+win_worker
 
 [vms:vars]
 disk1_size='100'
