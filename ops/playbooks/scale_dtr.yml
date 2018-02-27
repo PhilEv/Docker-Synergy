@@ -22,17 +22,11 @@
     - ../group_vars/vars
     - ../group_vars/vault
     - ../group_vars/backups
-    - includes/internal_vars.yml
 
   vars:
     http_proxy_switch:  "{% if  env.http_proxy is defined %} --http-proxy {{ env.http_proxy }} {% endif %}"
     https_proxy_switch:  "{% if  env.https_proxy is defined %} --https-proxy {{ env.https_proxy }} {% endif %}"
     no_proxy_switch:  "{% if  env.no_proxy is defined %} --no-proxy '{{ env.no_proxy }}' {% endif %}"
-
-  environment:
-    - UCP_USERNAME: "{{ ucp_username }}"
-    - UCP_PASSWORD: "{{ ucp_password }}"
-    - UCP_CA: "{{ ucp_ca_cert | default('') }}"
 
   pre_tasks:
     - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
@@ -45,8 +39,7 @@
       ARG_UCP_USER:      "{{ ucp_username }}"
       ARG_UCP_PASSWORD:  "{{ ucp_password }}"
       ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
-      worker_role_ports: "{{ internal_dtr_ports }}"
-      worker_join_delay: 60
+      worker_join_delay: 120
 
     - role: get-dtr-replica
       ARG_UCP_IP:        "{{ ucp_instance }}.{{domain_name}}"
@@ -55,14 +48,7 @@
 
   tasks:
 
-#
-# Load Certificates
-#
-    - include_tasks: includes/load_certificates.yml
 
-#
-# There is probably a better way of doing this
-#
     - name: "Poll DTR on {{ inventory_hostname }}" 
       uri:
         url: https://{{ inventory_hostname }}.{{ domain_name }}/login
@@ -80,17 +66,16 @@
 #
 
     - name: Join DTR nodes
-      command: docker run --env UCP_USERNAME --env UCP_PASSWORD {{ switch_env_ucp_ca }}  docker/dtr:{{ dtr_version }} join |
+      command: docker run docker/dtr:{{ dtr_version }} join |
         --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
-        --ucp-url https://{{ ucp_instance }}.{{ domain_name }} 
-        {{ switch_ucp_insecure }} --existing-replica-id {{ existing_dtr_replica_id }}
-      vars:
-        switch_ucp_insecure:         "{% if ucp_ca_cert is defined %}{% else %}--ucp-insecure-tls{% endif %}"
-        switch_env_ucp_ca:           "{% if ucp_ca_cert is defined %}--env UCP_CA{% endif %}"
- 
+        --ucp-url https://{{ groups.ucp[0] }}.{{ domain_name }} 
+        --ucp-username {{ ucp_username }} 
+        --ucp-password {{ ucp_password }} 
+        --ucp-insecure-tls --existing-replica-id {{ existing_dtr_replica_id }}
       register: task_result
 #      until: task_result.rc == 0
 #      retries: 1
 #      delay: 60
       when: not dtr_is_there and existing_dtr_replica_id != 0
+
 

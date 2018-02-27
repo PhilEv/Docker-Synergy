@@ -49,8 +49,11 @@
 
     - name: How many nodes are active now
       shell: >
-            (
+            (DOCKER_CERT_PATH="{{ ucp_cert_path }}" ;
+             DOCKER_HOST="tcp://{{ groups['ucp_lb'][0]}}.{{ domain_name }}:443" ;
+             DOCKER_TLS_VERIFY="1" ;
              docker node ls -f "role=manager" --format "{{ '{{' }}.Status{{ '}}' }}" | grep Ready | wc -l )
+      delegate_to: localhost
       register: active_nodes
 
 

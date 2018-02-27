@@ -20,7 +20,7 @@
 #
 worker_join_delay: 60
 
-worker_role_ports:
+role_ports:
   - 80/tcp
   - 443/tcp
   - 2377/tcp
@@ -29,3 +29,4 @@ worker_role_ports:
   - 7946/tcp
   - 7946/udp
   - 12376/tcp
+

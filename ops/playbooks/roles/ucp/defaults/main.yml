@@ -15,9 +15,7 @@
 ### 
 ---
 
-ucp_role_join_delay: 10
-
-ucp_role_ports:
+role_ports:
   - 443/tcp
   - 2376/tcp
   - 2377/tcp

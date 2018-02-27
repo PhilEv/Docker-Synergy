@@ -1,60 +1,77 @@
 ## UCP
 [ucp_main]
-clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
+nm-ucp01 ip_addr='10.60.59.46/16' esxi_host='esxi-1.cloudra.local'
 
 [ucp]
-clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
-clh-ucp02 ip_addr='10.60.59.12/16' esxi_host='esxi-clh-2.cloudra.local'
-clh-ucp03 ip_addr='10.60.59.13/16' esxi_host='esxi-clh-3.cloudra.local'
+nm-ucp01 ip_addr='10.60.59.46/16' esxi_host='esxi-1.cloudra.local'
+nm-ucp02 ip_addr='10.60.59.47/16' esxi_host='esxi-2.cloudra.local'
+nm-ucp03 ip_addr='10.60.59.48/16' esxi_host='esxi-3.cloudra.local'
 
 [ucp:vars]
 cpus='4'
 ram='8192'
 disk2_size='500'
+node_policy='nm-bronze'
 
 # DTR
 [dtr_main]
-clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
+nm-dtr01 ip_addr='10.60.59.49/16' esxi_host='esxi-1.cloudra.local'
 
 [dtr]
-clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
-clh-dtr02 ip_addr='10.60.59.15/16' esxi_host='esxi-clh-2.cloudra.local'
-clh-dtr03 ip_addr='10.60.59.16/16' esxi_host='esxi-clh-3.cloudra.local'
+nm-dtr01 ip_addr='10.60.59.49/16' esxi_host='esxi-1.cloudra.local'
+nm-dtr02 ip_addr='10.60.59.50/16' esxi_host='esxi-2.cloudra.local'
+nm-dtr03 ip_addr='10.60.59.51/16' esxi_host='esxi-3.cloudra.local'
 
 [dtr:vars]
 cpus='2' 
 ram='16384' 
 disk2_size='500'
+node_policy='nm-gold'
 
 ## WORKER
 [worker]
-clh-worker01 ip_addr='10.60.59.21/16' esxi_host='esxi-clh-1.cloudra.local'
-clh-worker02 ip_addr='10.60.59.22/16' esxi_host='esxi-clh-2.cloudra.local'
-clh-worker03 ip_addr='10.60.59.23/16' esxi_host='esxi-clh-3.cloudra.local'
+nm-worker01 ip_addr='10.60.59.56/16' esxi_host='esxi-1.cloudra.local'
+nm-worker02 ip_addr='10.60.59.57/16' esxi_host='esxi-2.cloudra.local'
+nm-worker03 ip_addr='10.60.59.58/16' esxi_host='esxi-3.cloudra.local'
 
 [worker:vars]
 cpus='4'
 ram='65536'
 disk2_size='500'
+node_policy='nm-bronze'
+
+## WINDOWS WORKER
+[win_worker]
+nm-win-worker01 ip_addr='10.60.59.61/16' esxi_host='esxi-1.cloudra.local'
+nm-win-worker02 ip_addr='10.60.59.62/16' esxi_host='esxi-2.cloudra.local'
+nm-win-worker03 ip_addr='10.60.59.100/16' esxi_host='esxi-3.cloudra.local'
+
+[win_worker:vars]
+cpus='4'
+ram='65536'
+disk1_size='100'
+disk2_size='500'
+node_policy='nm-bronze'
 
 ## LOAD BALANCERS
 [ucp_lb]
-clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
+nm-ucp ip_addr='10.60.59.52/16'    esxi_host='esxi-1.cloudra.local'
 
 [dtr_lb]
-clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
+nm-dtr ip_addr='10.60.59.53/16'    esxi_host='esxi-2.cloudra.local'
 
 [worker_lb]
-clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
+nm-worker ip_addr='10.60.59.54/16' esxi_host='esxi-3.cloudra.local'
 
 [lbs]
-clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
-clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
-clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
+nm-ucp ip_addr='10.60.59.52/16'    esxi_host='esxi-1.cloudra.local'
+nm-dtr ip_addr='10.60.59.53/16'    esxi_host='esxi-2.cloudra.local'
+nm-worker ip_addr='10.60.59.54/16' esxi_host='esxi-3.cloudra.local'
 
 [lbs:vars]
 cpus='2'
 ram='4096'
+node_policy='nm-bronze'
 
 [docker:children]
 ucp
@@ -62,24 +79,27 @@ dtr
 worker
 
 [nfs]
-clh-nfs ip_addr='10.60.59.20/16'    esxi_host='esxi-clh-3.cloudra.local'
+nm-nfs ip_addr='10.60.59.55/16'    esxi_host='esxi-3.cloudra.local'
 
 [nfs:vars]
 cpus='2'
 ram='4096'
 disk2_size='500'
+node_policy='nm-gold'
 
 [logger]
-clh-logger ip_addr='10.60.59.24/16' esxi_host='esxi-clh-2.cloudra.local'
+nm-logger ip_addr='10.60.59.59/16' esxi_host='esxi-2.cloudra.local'
 
 [logger:vars]
 cpus='2'
 ram='4096'
+node_policy='nm-gold'
 
 [vms:children]
 ucp
 dtr
 worker
+win_worker
 lbs
 nfs
 logger

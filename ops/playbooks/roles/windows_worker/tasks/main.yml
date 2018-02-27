@@ -37,7 +37,7 @@
 
     - name: Is the node already in the swarm
       uri:
-        url: 'https://{{ ARG_UCP_IP }}/nodes?filters={"name":{"{{ inventory_hostname }}.{{ domain_name }}":true}}'
+        url: 'https://{{ ARG_UCP_IP }}/nodes?filters={"name":{"{{ inventory_hostname }}":true}}'
         headers:
           Content-Type: application/json
           Authorization: Bearer {{ auth_token }}
@@ -76,12 +76,12 @@
       when: swarm_member == false
 
     - name: Add node to the swarm
-      command: "docker swarm join --token {{ token }} {{ ARG_ADVERTIZE_IP }}"
+      win_command: "docker swarm join --token {{ token }} {{ ARG_ADVERTIZE_IP }}"
       when: swarm_member == false
 
     - name: Poll the status of the node
       uri:
-        url: 'https://{{ ARG_UCP_IP }}/nodes/{{ inventory_hostname }}.{{ domain_name }}'
+        url: 'https://{{ ARG_UCP_IP }}/nodes/{{ inventory_hostname }}'
         headers:
           Content-Type: application/json
           Authorization: Bearer {{ auth_token }}

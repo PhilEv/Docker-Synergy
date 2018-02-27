@@ -7,11 +7,18 @@
 #
 
 
-- name: "Find DTR: Init"
-  set_fact:
-    checks:
-      status: -1
-
+- name: init
+  uri:
+    url: "https://{{ groups.ucp[0] }}.{{ domain_name }}/_thereisnosuchpage"
+    headers:
+      Content-Type: application/json
+    method: POST
+    status_code: 200,500
+    validate_certs: no
+  delegate_to: localhost
+  register: checks
+  failed_when: false
+  changed_when: false
 
 - name: check
   uri:
@@ -29,11 +36,11 @@
   changed_when: false
   when: checks.status !=200 and checks.status != 500 
   with_items: "{{ ping_servers }}"
-  no_log: yes
+
 
 - set_fact: ucp_instance=".none."
 - name: set ucp_instance
   set_fact: ucp_instance={{ item.item }}
   when: "'status' in item and item.status == 200"
   with_items: "{{ checks.results }}"
-  no_log: yes
+
