@@ -7,13 +7,17 @@ datacenter: 'SynergyCaaS'
 vm_username: 'root'
 vm_template: 'nm-template'
 vm_portgroup: 'SynCaaSPortGroup'
-win_vm_template: 'nm-win2016-template'
 # the folder name is understood relative to the selected datacenter
 folder_name: '/nm'
 datastores: ['Docker_NM']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.20' # was 0.17
+
+
+# enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
+enable_windows: false
+win_vm_template: 'nm-win2016-template'
 
 # Networking
 nic_name: 'ens192'
@@ -53,9 +57,6 @@ ucp_username: 'admin'
 #ucp_certs_dir: '/root/certs/ucp_certs' 
 #dtr_certs_dir: '/root/certs/dtr_certs'
 
-# enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
-#enable_windows: false
-enable_windows: true
 
 # Monitoring configuration
 cadvisor_version: 'v0.25.0'
