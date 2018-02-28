@@ -1,24 +1,24 @@
 ---
-# This playbook will restore the swarm from a disaster
+# This playbook will Rrestore the swarm fomr a disaster
 
-- include: playbooks/create_vms.yml
-- include: playbooks/config_networking.yml
+- import_playbook: playbooks/create_vms.yml
+- import_playbook: playbooks/config_networking.yml
 # this step is optional; enabling it will allow for passwordless login between nodes
-#- include: playbooks/distribute_keys.yml
-#- include: playbooks/config_subscription.yml
-- include: playbooks/install_haproxy.yml
-- include: playbooks/config_ntp.yml
-- include: playbooks/install_docker.yml
-- include: playbooks/install_rsyslog.yml
-- include: playbooks/config_docker_lvs.yml
-- include: playbooks/docker_post_config.yml
-- include: playbooks/install_nfs_server.yml
-- include: playbooks/install_nfs_clients.yml
+#- import_playbook: playbooks/distribute_keys.yml
+#- import_playbook: playbooks/config_subscription.yml
+- import_playbook: playbooks/install_haproxy.yml
+- import_playbook: playbooks/config_ntp.yml
+- import_playbook: playbooks/install_docker.yml
+- import_playbook: playbooks/install_rsyslog.yml
+- import_playbook: playbooks/config_docker_lvs.yml
+- import_playbook: playbooks/docker_post_config.yml
+- import_playbook: playbooks/install_nfs_server.yml
+- import_playbook: playbooks/install_nfs_clients.yml
 # files needed by prometheus must be here before we start the swarm
-- include: playbooks/config_monitoring_files.yml
-- include: playbooks/restore_ucp.yml
-- include: playbooks/restore_dtr_data.yml
-- include: playbooks/restore_dtr.yml
-- include: playbooks/scale_workers.yml
-- include: playbooks/scale_dtr.yml
+- import_playbook: playbooks/config_monitoring_files.yml
+- import_playbook: playbooks/restore_ucp.yml
+- import_playbook: playbooks/restore_dtr_data.yml
+- import_playbook: playbooks/restore_dtr.yml
+- import_playbook: playbooks/scale_workers.yml
+- import_playbook: playbooks/scale_dtr.yml
 #- include: tmp/scale_ucps.yml

@@ -16,5 +16,5 @@
 ---
 
 hpe_openports_ports:
-  - 81/tcp
+  - 80/tcp
   - 443/tcp

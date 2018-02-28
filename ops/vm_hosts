@@ -11,7 +11,6 @@ nm-ucp03 ip_addr='10.60.59.48/16' esxi_host='esxi-3.cloudra.local'
 cpus='4'
 ram='8192'
 disk2_size='500'
-node_policy='nm-bronze'
 
 # DTR
 [dtr_main]
@@ -26,7 +25,6 @@ nm-dtr03 ip_addr='10.60.59.51/16' esxi_host='esxi-3.cloudra.local'
 cpus='2' 
 ram='16384' 
 disk2_size='500'
-node_policy='nm-gold'
 
 ## WORKER
 [worker]
@@ -38,7 +36,6 @@ nm-worker03 ip_addr='10.60.59.58/16' esxi_host='esxi-3.cloudra.local'
 cpus='4'
 ram='65536'
 disk2_size='500'
-node_policy='nm-bronze'
 
 ## WINDOWS WORKER
 [win_worker]
@@ -51,7 +48,6 @@ cpus='4'
 ram='65536'
 disk1_size='100'
 disk2_size='500'
-node_policy='nm-bronze'
 
 ## LOAD BALANCERS
 [ucp_lb]
@@ -71,7 +67,6 @@ nm-worker ip_addr='10.60.59.54/16' esxi_host='esxi-3.cloudra.local'
 [lbs:vars]
 cpus='2'
 ram='4096'
-node_policy='nm-bronze'
 
 [docker:children]
 ucp
@@ -85,7 +80,6 @@ nm-nfs ip_addr='10.60.59.55/16'    esxi_host='esxi-3.cloudra.local'
 cpus='2'
 ram='4096'
 disk2_size='500'
-node_policy='nm-gold'
 
 [logger]
 nm-logger ip_addr='10.60.59.59/16' esxi_host='esxi-2.cloudra.local'
@@ -93,7 +87,6 @@ nm-logger ip_addr='10.60.59.59/16' esxi_host='esxi-2.cloudra.local'
 [logger:vars]
 cpus='2'
 ram='4096'
-node_policy='nm-gold'
 
 [vms:children]
 ucp

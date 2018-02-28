@@ -7,6 +7,7 @@ datacenter: 'SynergyCaaS'
 vm_username: 'root'
 vm_template: 'nm-template'
 win_vm_template: 'nm-win2016-template'
+# the folder name is understood relative to the selected datacenter
 folder_name: '/nm'
 datastores: ['Docker_NM']
 disk2: '/dev/sdb'
@@ -23,10 +24,16 @@ ntp_servers: ['10.60.1.123','0.us.pool.net.org','1.us.pool.net.org']
 
 # Docker configuration
 # docker_ee_url: is defined in group_vars/vault, should be kept secret
+#
+# by default, the latest, stable version of docker-ee is installed, but you can specify the version you want (which is recommended)
+# docker_ee_version: 'docker-ee-17.06.2.ee.6-3.el7.rhel.x86_64'
 rhel_version: '7.4'
-dtr_version: '2.4.0'
-ucp_version: '2.2.4'
+#dtr_version: '2.4.0'
+dtr_version: 'latest'
+#ucp_version: '2.2.4'
+ucp_version: 'latest'
 images_folder: '/docker-images'
+#license_file: '/root/license.lic'
 license_file: '/root/nm/ops/license.lic'
 ucp_username: 'admin'
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
@@ -42,7 +49,7 @@ prom_persistent_vol_name: 'nm-db-data'
 prom_persistent_vol_size: '10GB'
 
 # Central Logging configuration
-logspout_version: 'latest'
+logspout_version: 'v3.2.4'
 
 # Environment configuration
 # Leave proxy settings empty if proxy is not required

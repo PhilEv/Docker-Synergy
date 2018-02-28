@@ -14,15 +14,13 @@
 # limitations under the License.
 ###
 ---
-- hosts: dtr
-  serial: 1
+- hosts: local
   gather_facts: false
 
   vars_files:
     - ../group_vars/vars
     - ../group_vars/vault
     - ../group_vars/backups
-    - includes/internal_vars.yml
 
   vars:
     http_proxy_switch:  "{% if  env.http_proxy is defined %} --http-proxy {{ env.http_proxy }} {% endif %}"
@@ -40,14 +38,6 @@
       when: _debug is defined
 
   roles:
-    - role: worker
-      ARG_UCP_IP:        "{{ ucp_instance }}.{{domain_name}}"
-      ARG_UCP_USER:      "{{ ucp_username }}"
-      ARG_UCP_PASSWORD:  "{{ ucp_password }}"
-      ARG_ADVERTIZE_IP:  "{{ ucp_instance }}.{{ domain_name }}:2377"
-      worker_role_ports: "{{ internal_dtr_ports }}"
-      worker_join_delay: 60
-
     - role: get-dtr-replica
       ARG_UCP_IP:        "{{ ucp_instance }}.{{domain_name}}"
       ARG_UCP_USER:      "{{ ucp_username }}"
@@ -55,42 +45,59 @@
 
   tasks:
 
+
+#
+# note: existing_dtr_replica_id is returned by the role get-dtr-replica
+#
+
 #
 # Load Certificates
 #
     - include_tasks: includes/load_certificates.yml
 
 #
-# There is probably a better way of doing this
-#
-    - name: "Poll DTR on {{ inventory_hostname }}" 
-      uri:
-        url: https://{{ inventory_hostname }}.{{ domain_name }}/login
-        validate_certs: no
-        return_content: yes
-        status_code: 200,111,-1
-      register: webpage
-
-    - name: See if there is a DTR replica running on this node
-      set_fact:
-        dtr_is_there: "{% if 'Docker Trusted Registry' in webpage.content %}true{% else %}false{% endif %}"
-
-#
-# existing_dtr_replica_id is returned by the role get-dtr-replica
+# We reconfigure the UCP endpoint, for some reason, using the LB fqdn does not work when we install/join DTR
 #
 
-    - name: Join DTR nodes
-      command: docker run --env UCP_USERNAME --env UCP_PASSWORD {{ switch_env_ucp_ca }}  docker/dtr:{{ dtr_version }} join |
-        --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
-        --ucp-url https://{{ ucp_instance }}.{{ domain_name }} 
-        {{ switch_ucp_insecure }} --existing-replica-id {{ existing_dtr_replica_id }}
+    - name: Reconfigure DTR
+      command: docker run 
+        --env UCP_USERNAME 
+        --env UCP_PASSWORD 
+        {{ switch_env_ucp_ca }} 
+        docker/dtr:{{ dtr_version }} reconfigure
+          --ucp-url https://{{ groups.ucp_lb[0] }}.{{ domain_name }} 
+          {{ switch_ucp_insecure }} --existing-replica-id {{ existing_dtr_replica_id }}
       vars:
         switch_ucp_insecure:         "{% if ucp_ca_cert is defined %}{% else %}--ucp-insecure-tls{% endif %}"
         switch_env_ucp_ca:           "{% if ucp_ca_cert is defined %}--env UCP_CA{% endif %}"
- 
       register: task_result
-#      until: task_result.rc == 0
-#      retries: 1
-#      delay: 60
-      when: not dtr_is_there and existing_dtr_replica_id != 0
+      until: task_result.rc == 0
+      retries: 3
+      delay: 60
+      when: existing_dtr_replica_id != 0
+      delegate_to: "{{ ucp_instance }}" 
+
+    - debug: var=task_result
+      when: _debug is defined
+#
+# find a working DTR instance
+#
+    - name: Find a DTR instance
+      include_tasks: includes/find_dtr.yml ping_servers="{{ groups.dtr }}"
+    - debug: var=dtr_instance
+#
+# Enable Image Scanning
+#
+    - name: Enable image scanning
+      uri:
+        url: "https://{{ dtr_instance }}.{{ domain_name }}/api/v0/meta/settings"
+        method: POST
+        user: "{{ ucp_username }}"
+        password: "{{ ucp_password }}"
+        body: {"scanningEnabled":true}
+        status_code: 202
+        body_format: json
+        force_basic_auth: yes
+        validate_certs: no
+      when: dtr_instance != ".none."
 
