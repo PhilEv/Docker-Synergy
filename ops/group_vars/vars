@@ -6,6 +6,7 @@ vcenter_validate_certs: 'no'
 datacenter: 'SynergyCaaS'
 vm_username: 'root'
 vm_template: 'nm-template'
+vm_portgroup: 'SynCaaSPortGroup'
 win_vm_template: 'nm-win2016-template'
 # the folder name is understood relative to the selected datacenter
 folder_name: '/nm'
@@ -13,7 +14,6 @@ datastores: ['Docker_NM']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.20' # was 0.17
-vm_portgroup: 'SynCaaSPortGroup'
 
 # Networking
 nic_name: 'ens192'
