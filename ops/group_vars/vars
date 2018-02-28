@@ -18,6 +18,7 @@ vsphere_plugin_version: '0.20' # was 0.17
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
 enable_windows: false
 win_vm_template: 'nm-win2016-template'
+win_username: 'Administrator'
 
 # Networking
 nic_name: 'ens192'
