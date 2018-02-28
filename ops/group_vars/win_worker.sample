@@ -1,4 +1,6 @@
-nsible_user: Administrator
+# ansible-vault encrypt win_worker.yml --vault-password-file 'password file location'
+# ansible-vault edit win_worker.yml --vault-password-file 'password file location'
+ansible_user: Administrator
 ansible_password: 'Enter Password'
 ansible_port: 5986
 ansible_connection: winrm
