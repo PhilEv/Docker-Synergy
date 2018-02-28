@@ -1,5 +1,6 @@
 ops/license.lic
 ops/group_vars/vault
+ops/group_vars/win_worker.yml
 ops/*.svt2
 ops/ansible.log
 dev/.vault_pass
