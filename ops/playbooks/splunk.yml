@@ -1,0 +1,63 @@
+###
+# Copyright (2017) Hewlett Packard Enterprise Development LP
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+### 
+---
+- hosts: ucp
+  gather_facts: false
+  become_user: root
+  become: true
+
+  vars_files:
+    - ../group_vars/vars
+    - ../group_vars/vault
+    - ./includes/internal_vars.yml
+
+  environment:
+    - "{{ env }}"
+
+  tasks:
+
+#
+# the stack will be deployed from only one machine
+#
+    - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
+
+    - block:
+
+      - debug: msg=" About to deploy the spluk stack from {{ ucp_instance }}"
+
+      - name: Creates directory on the VM
+        file:
+          path: /root/scripts/splunk
+          state: directory
+
+      - name: source stack specific variables
+        include_vars:
+          file: ../templates/splunk/{{ splunk_architecture }}/vars.yml
+
+      - name: Copy docker stack file
+        template: src=../templates/splunk/{{ splunk_architecture }}/splunk.yml.j2 dest=/root/scripts/splunk/splunk.yml
+
+      - name: Deploy Splunk Stack 
+        command: docker stack deploy --compose-file splunk.yml {{ splunk_architecture_name | default ('splunk') }}
+        args:
+          chdir: /root/scripts/splunk
+        when: inventory_hostname == ucp_instance
+
+      when: splunk_integration is defined and splunk_integration and inventory_hostname == ucp_instance
+
+    - debug: msg="No splunk integration wanted"
+      when: splunk_integration is not defined or not splunk_integration
+

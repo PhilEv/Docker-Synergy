@@ -1,0 +1,6 @@
+#
+# Architecture specific Variables
+#
+splunk_architecture_name: splunk-docker-app
+splunk_architecture_admin_name: admin
+splunk_architecture_admin_pass: changeme

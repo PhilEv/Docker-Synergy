@@ -27,7 +27,7 @@ services:
       SPLUNK_START_ARGS: --accept-license --answer-yes
       SPLUNK_FORWARD_SERVER: splunkenterprise:9997
       SPLUNK_USER: root
-      SPLUNK_ADD: "monitor /docker_host/log -auth {{ splunk_username }}:{{ splunk_password }}"
+      SPLUNK_ADD: "monitor /docker_host/log -auth {{ splunk_architecture_admin_name }}:{{ splunk_architecture_admin_pass }}"
     volumes:
       - vsplunkuf-opt-splunk-etc:/opt/splunk/etc
       - vsplunkuf-opt-splunk-var:/opt/splunk/var      

@@ -31,7 +31,7 @@ services:
       - collector_data:/data/
     environment:
       - COLLECTOR__SPLUNK_URL=output.splunk__url=https://splunkenterprise:8088/services/collector/event/1.0
-      - COLLECTOR__SPLUNK_TOKEN=output.splunk__token=00000000-0000-0000-0000-000000000000
+      - COLLECTOR__SPLUNK_TOKEN=output.splunk__token={{ splunk_architecture_token }}
       - COLLECTOR__SPLUNK_INSECURE=output.splunk__insecure=true
       - COLLECTOR__EULA=general__acceptEULA=true
     restart: always
