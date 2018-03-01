@@ -36,11 +36,18 @@ services:
       SPLUNK_ENABLE_DEPLOY_SERVER: "true" 
     ports:
       - "8001:8000"
-      - "8089:8089" 
+      - "8189:8089" 
     deploy:
       placement:
        constraints: [node.role == manager]
 
 volumes:
   vsplunk-opt-splunk-etc:
+    driver: vsphere
+    driver_opts:
+      size: 100GB
   vsplunk-opt-splunk-var:
+    driver: vsphere
+    driver_opts:
+      size: 100GB
+

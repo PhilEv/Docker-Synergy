@@ -70,3 +70,11 @@ env:
 #  http_proxy: 'proxy.am2.hpelabs.net:8080'
 #  https_proxy: 'proxy.am2.hpelabs.net:8080'
 #  no_proxy: '/var/run/docker.sock,localhost,am2.cloudra.local,10.10.174.'
+
+
+#
+# splunk integration
+#
+splunk_integration: true
+splunk_username: admin
+splunk_password: Just4m3hp
