@@ -38,8 +38,7 @@ dtr_version: 'latest'
 #ucp_version: '2.2.4'
 ucp_version: 'latest'
 images_folder: '/docker-images'
-#license_file: '/root/license.lic'
-license_file: '/root/nm/ops/license.lic'
+license_file: '/root/license.lic'
 ucp_username: 'admin'
 
 #
