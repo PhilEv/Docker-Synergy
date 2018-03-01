@@ -14,7 +14,7 @@
 # limitations under the License.
 ### 
 ---
-- hosts: vms
+- hosts: all_vms
   gather_facts: false
   connection: local
   user: remote
@@ -38,6 +38,8 @@
         folder: "{{ datacenter }}/vm{{ folder_name }}"
         name: "{{ inventory_hostname }}"
         state: poweredoff
+      vars:
+        ansible_connection: local
       failed_when: false
 
     - name: Delete VMs
@@ -51,5 +53,6 @@
         folder: "{{ datacenter }}/vm{{ folder_name }}"
         name: "{{ inventory_hostname }}"
         state: absent
-
+      vars:
+        ansible_connection: local
 
