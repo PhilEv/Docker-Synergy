@@ -1,6 +1,10 @@
 #
 # Architecture specific Variables
 #
-splunk_architecture_name: splunk-docker-app
+#splunk_architecture_name: stack is named with the value of this variable
+#splunk_architecture_name: splunk-docker-app
 splunk_architecture_admin_name: admin
 splunk_architecture_admin_pass: changeme
+# some dashboard does not seem to work with 7.0.0
+#splunk_architecture_splunk_version: 7.0.0-monitor
+splunk_architecture_splunk_version: 6.5.3-monitor

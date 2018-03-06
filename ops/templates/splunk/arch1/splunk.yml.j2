@@ -2,7 +2,7 @@ version: '3'
 services:
   splunkenterprise:
     hostname: splunkenterprise
-    image: splunk/splunk:7.0.0-monitor
+    image: splunk/splunk:{{ splunk_architecture_splunk_version }}
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
       SPLUNK_ENABLE_LISTEN: 9997
@@ -22,7 +22,7 @@ services:
   splunkuniversalforwarder:
 #    will use .Node.Hostname  for the hostname when this is available
     hostname: "spuf-{{ '{{' }}.Node.ID{{ '}}' }}"
-    image: splunk/universalforwarder:7.0.0-monitor
+    image: splunk/universalforwarder:{{ splunk_architecture_splunk_version }}
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
       SPLUNK_FORWARD_SERVER: splunkenterprise:9997
@@ -39,7 +39,15 @@ services:
     
 volumes:
   vsplunk-opt-splunk-etc:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
   vsplunk-opt-splunk-var:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
+#
+# universal forwarders use local volumes
+#
   vsplunkuf-opt-splunk-etc:
   vsplunkuf-opt-splunk-var:
-

@@ -20,7 +20,7 @@
 
 replica_id=$1
 docker run -i --rm docker/dtr:{{ dtr_version }} restore \
-    --ucp-url https://{{ groups.ucp_lb[0] }}.{{ domain_name }} \
+    --ucp-url https://{{ ucp_instance }}.{{ domain_name }} \
     --ucp-insecure-tls \
     --ucp-username admin \
     --ucp-password Just4m3hp \

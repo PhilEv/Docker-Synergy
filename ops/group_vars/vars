@@ -85,4 +85,4 @@ splunk_integration: true
 #   splunk.yml.j2, which is a stack deploying the splunk integration (swarm orchestration)
 #   vars.yml, which contains variables which may be used by the splunk.yml.j2 file
 
-splunk_architecture: arch2
+splunk_architecture: arch1

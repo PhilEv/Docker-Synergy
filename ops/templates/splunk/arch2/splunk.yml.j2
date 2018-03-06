@@ -49,6 +49,12 @@ services:
     privileged: true
 
 volumes:
-  collector_data:
   vsplunk-opt-splunk-etc:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
   vsplunk-opt-splunk-var:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
+  collector_data:
