@@ -12,9 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-### 
+###
 ---
-- hosts: ucp
+- hosts: vms
   gather_facts: false
   become_user: root
   become: true
@@ -29,35 +29,64 @@
 
   tasks:
 
-#
-# the stack will be deployed from only one machine
-#
+  - block:
+
     - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
 
+    - name: source stack specific variables
+      include_vars:
+        file: ../templates/splunk/{{ splunk_architecture }}/vars.yml
+
+#
+# deploy universal forwarder on non docker hosts
+#
     - block:
 
-      - debug: msg=" About to deploy the spluk stack from {{ ucp_instance }}"
+      - name: Copy Universal forwarder Pkg 
+        copy:
+          src: "../files/{{ splunk_architecture_universal_forwarder_package }}"
+          dest: /root/scripts/splunk/
 
-      - name: Creates directory on the VM
-        file:
-          path: /root/scripts/splunk
-          state: directory
+      - name: Copy script file for non docker hosts
+        template:
+          src: ../templates/splunk/{{ splunk_architecture }}/nondocker.sh.j2
+          dest: /root/scripts/splunk/nondocker.sh
 
-      - name: source stack specific variables
-        include_vars:
-          file: ../templates/splunk/{{ splunk_architecture }}/vars.yml
+      - file:
+          path: /root/scripts/splunk/nondocker.sh
+          mode: 0744
 
-      - name: Copy docker stack file
-        template: src=../templates/splunk/{{ splunk_architecture }}/splunk.yml.j2 dest=/root/scripts/splunk/splunk.yml
+      - name: Install and Start Universal Forwarder
+        shell: /root/scripts/splunk/nondocker.sh
+        args:
+          chdir: /root/scripts/splunk
+      
+      when: inventory_hostname not in groups.docker
+      
+# end of section of non docker hosts
 
-      - name: Deploy Splunk Stack 
+#
+# Deploy a stack for Docker hosts
+#
+    - block:
+
+      - name: Copy script file for non docker hosts
+        template:
+          src: ../templates/splunk/{{ splunk_architecture }}/splunk.yml.j2
+          dest: /root/scripts/splunk/splunk.yml
+
+      - name: Deploy Splunk Stack
         command: docker stack deploy --compose-file splunk.yml {{ splunk_architecture_name | default ('splunk') }}
         args:
           chdir: /root/scripts/splunk
-        when: inventory_hostname == ucp_instance
 
-      when: splunk_integration is defined and splunk_integration and inventory_hostname == ucp_instance
+      when: inventory_hostname == ucp_instance
 
-    - debug: msg="No splunk integration wanted"
-      when: splunk_integration is not defined or not splunk_integration
+# end of section for docker hosts
+
+    when: splunk_architecture is defined
+
+
+  - debug: msg="No splunk integration wanted"
+    when: splunk_architecture is not defined
 

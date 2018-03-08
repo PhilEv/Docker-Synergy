@@ -25,9 +25,18 @@ services:
     image: splunk/universalforwarder:{{ splunk_architecture_splunk_version }}
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
-      SPLUNK_FORWARD_SERVER: splunkenterprise:9997
+{% for forward_server in splunk_architecture_forward_servers %}
+{% if loop.index == 1 %}
+      SPLUNK_FORWARD_SERVER: {{ forward_server }}
+{% else %}
+      SPLUNK_FORWARD_SERVER_{{ loop.index - 1 }}: {{ forward_server }}
+{% endif %}
+{% endfor %}
       SPLUNK_USER: root
-      SPLUNK_ADD: "monitor /docker_host/log -auth {{ splunk_architecture_admin_name }}:{{ splunk_architecture_admin_pass }}"
+      SPLUNK_ADD: "tcp 1514 -sourcetype ucp"
+      SPLUNK_ADD_1: monitor -sourcetype authlog -source /docker_host/log/secure
+      SPLUNK_ADD_2: monitor -sourcetype syslog -source /docker_host/log/messages
+#     SPLUNK_ADD:   monitor /docker_host/log -auth {{ splunk_architecture_admin_name }}:{{ splunk_architecture_admin_pass }}
     volumes:
       - vsplunkuf-opt-splunk-etc:/opt/splunk/etc
       - vsplunkuf-opt-splunk-var:/opt/splunk/var      
