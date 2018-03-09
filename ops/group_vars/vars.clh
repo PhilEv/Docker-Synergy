@@ -79,10 +79,12 @@ env:
 #
 # splunk integration
 #
-splunk_integration: true
 
-# designates a subfolder in  <homedir>/templates/splunk, this folder must contain two files (name is hardcoded)
+# designates a subfolder in  <homedir>/templates/splunk, this folder must contain three files (name is hardcoded)
 #   splunk.yml.j2, which is a stack deploying the splunk integration (swarm orchestration)
 #   vars.yml, which contains variables which may be used by the splunk.yml.j2 file
+#   nondocker.sh which is a script that will install and configure the universal forwarder on a non docker host
 
-splunk_architecture: arch2
+# if splunk_architecture is not defined, the playbook splunk.yml will not do anything
+
+splunk_architecture: arch1

@@ -1,6 +1,0 @@
-#
-# Architecture specific Variables
-#
-# architecture name is the name used for the stack being deploy, the default is splunk but you can change it
-#splunk_architecture_name: splunk-outcoldsolution
-splunk_architecture_token: '00000000-0000-0000-0000-000000000000'

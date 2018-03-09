@@ -14,20 +14,6 @@
 # limitations under the License.
 ###
 ---
-- hosts: vms
-  gather_facts: false
-  become_user: root
-  become: true
-
-  vars_files:
-    - ../group_vars/vars
-    - ../group_vars/vault
-    - ./includes/internal_vars.yml
-
-  environment:
-    - "{{ env }}"
-
-  tasks:
 
   - block:
 
@@ -35,31 +21,46 @@
 
     - name: source stack specific variables
       include_vars:
-        file: ../templates/splunk/{{ splunk_architecture }}/vars.yml
+        file: ../templates/monitoring/{{ monitoring_stack }}/vars.yml
 
 #
-# deploy universal forwarder on non docker hosts
+# section for the logger VM which is used to collect syslog from the ESX inrastructure and the UCP syslogs
+#
+    - block:
+
+      - name: Open  ports  in the firewall
+        firewalld:
+          port: "{{ item }}"
+          immediate: true
+          permanent: true
+          state: enabled
+        with_items: "{{ splunk_architecture_syslog_ports }}"
+
+      when: inventory_hostname in groups.logger
+
+#
+# Section for Non Docker hosts
 #
     - block:
 
       - name: Copy Universal forwarder Pkg 
         copy:
           src: "../files/{{ splunk_architecture_universal_forwarder_package }}"
-          dest: /root/scripts/splunk/
+          dest: /root/scripts/monitoring/
 
       - name: Copy script file for non docker hosts
         template:
-          src: ../templates/splunk/{{ splunk_architecture }}/nondocker.sh.j2
-          dest: /root/scripts/splunk/nondocker.sh
+          src: ../templates/monitoring/{{ monitoring_stack }}/nondocker.sh.j2
+          dest: /root/scripts/monitoring/nondocker.sh
 
       - file:
-          path: /root/scripts/splunk/nondocker.sh
+          path: /root/scripts/monitoring/nondocker.sh
           mode: 0744
 
       - name: Install and Start Universal Forwarder
-        shell: /root/scripts/splunk/nondocker.sh
+        shell: /root/scripts/monitoring/nondocker.sh
         args:
-          chdir: /root/scripts/splunk
+          chdir: /root/scripts/monitoring
       
       when: inventory_hostname not in groups.docker
       
@@ -70,23 +71,28 @@
 #
     - block:
 
+      - name: Create script directory
+        file:
+          path: /root/scripts/monitoring
+          state: directory
+
       - name: Copy script file for non docker hosts
         template:
-          src: ../templates/splunk/{{ splunk_architecture }}/splunk.yml.j2
-          dest: /root/scripts/splunk/splunk.yml
+          src: ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
+          dest: /root/scripts/monitoring/splunk.yml
 
       - name: Deploy Splunk Stack
-        command: docker stack deploy --compose-file splunk.yml {{ splunk_architecture_name | default ('splunk') }}
+        command: docker stack deploy --compose-file splunk.yml {{ monitoring_stack | default ('splunk') }}
         args:
-          chdir: /root/scripts/splunk
+          chdir: /root/scripts/monitoring
 
       when: inventory_hostname == ucp_instance
 
 # end of section for docker hosts
 
-    when: splunk_architecture is defined
+    when: monitoring_stack is defined
 
 
   - debug: msg="No splunk integration wanted"
-    when: splunk_architecture is not defined
+    when: monitoring_stack is not defined
 

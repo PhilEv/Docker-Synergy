@@ -21,14 +21,13 @@
 
   vars_files:
     - ../group_vars/vars
+    - includes/internal_vars.yml
 
   environment: "{{ env }}"
 
   roles:
     - role: hpe.openports
-      hpe_openports_ports:
-        - 514/tcp
-        - 514/udp
+      hpe_openports_ports: "{{ internal_syslog_ports }}"
       when: inventory_hostname in groups.logger
 
   tasks:
@@ -43,10 +42,10 @@
       when: inventory_hostname in groups.logger
       notify: Restart Rsyslog
 
-    - name: Allow docker nodes to send logs
-      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf
-      when: inventory_hostname in groups.docker
-      notify: Restart Rsyslog
+#    - name: Allow docker nodes to send logs
+#      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf
+#      when: inventory_hostname in groups.docker
+#      notify: Restart Rsyslog
 
   handlers:
     - name: Restart Rsyslog
