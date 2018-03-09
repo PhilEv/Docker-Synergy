@@ -14,7 +14,7 @@
 # limitations under the License.
 ### 
 ---
-- hosts: ucp ucp_lb
+- hosts: vms
   gather_facts: false
   become_user: root
   become: true
@@ -25,6 +25,8 @@
   environment: "{{ env }}"
 
   roles:
+
+# open the port used by Grafana
     - role: hpe.openports
       hpe_openports_ports:
         - 3000/tcp
@@ -32,6 +34,11 @@
 
 
   tasks:
+
+    - name: Configure all VMS to send their logs to the logger VM
+      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf
+      when: inventory_hostname in groups.vms
+      notify: Restart Rsyslog
 
     - name: Copy monitoring files to UCP
       copy: 
@@ -117,6 +124,12 @@
     - name: Enable and start haproxy service
       systemd:
         name: haproxy
+        enabled: yes
+        state: restarted
+
+    - name: Restart Rsyslog
+      systemd:
+        name: rsyslog
         enabled: yes
         state: restarted
 
