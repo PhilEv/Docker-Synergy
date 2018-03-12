@@ -24,5 +24,5 @@ splunk_architecture_syslog_ports:
 # indexers where the universal forwarders send the collected data
 #
 splunk_architecture_forward_servers:
-  - clh2-ansible.cloudra.local:9997
-  - clh2-ansible.cloudra.local:9997
+  - clh-ucp01.cloudra.local:9997
+  - clh-ucp02.cloudra.local:9997
