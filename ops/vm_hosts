@@ -29,8 +29,8 @@ disk2_size='500'
 ## WORKER
 [worker]
 nm-worker01 ip_addr='10.60.59.56/16' esxi_host='esxi-1.cloudra.local'
-nm-worker02 ip_addr='10.60.59.57/16' esxi_host='esxi-2.cloudra.local'
-nm-worker03 ip_addr='10.60.59.58/16' esxi_host='esxi-3.cloudra.local'
+#nm-worker02 ip_addr='10.60.59.57/16' esxi_host='esxi-2.cloudra.local'
+#nm-worker03 ip_addr='10.60.59.58/16' esxi_host='esxi-3.cloudra.local'
 
 [worker:vars]
 cpus='4'
