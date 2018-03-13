@@ -5,7 +5,7 @@
 # name of the pkg installed on non docker hosts (pkg should be dropped  in <repo>/files before attempting to deploy
 splunk_architecture_universal_forwarder_package: 'splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm'
 
-# Central Splunk Creds
+# forward server creds (for future use)
 splunk_architecture_admin_name: admin
 splunk_architecture_admin_pass: changeme
 
@@ -18,11 +18,11 @@ splunk_architecture_splunk_version: 7.0.0-monitor
 splunk_architecture_syslog_ports:
   - 514/udp
   - 514/tcp
-  - 1554/tcp
+  - 1514/tcp
 
 #
-# indexers where the universal forwarders send the collected data
+# indexers where the universal forwarders send the collected data. You may specify several indexers depending on your
+# splunk setup
 #
 splunk_architecture_forward_servers:
-  - clh2-ansible.cloudra.local:9997
   - clh2-ansible.cloudra.local:9997

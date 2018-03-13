@@ -25,4 +25,3 @@ splunk_architecture_syslog_ports:
 #
 splunk_architecture_forward_servers:
   - clh-ucp01.cloudra.local:9997
-  - clh-ucp02.cloudra.local:9997

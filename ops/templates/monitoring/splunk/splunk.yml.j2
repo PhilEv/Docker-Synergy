@@ -10,7 +10,7 @@ services:
 {% if loop.index == 1 %}
       SPLUNK_FORWARD_SERVER: {{ forward_server }}
 {% else %}
-      SPLUNK_FORWARD_SERVER_{{ loop.index - 1 }}: {{ forward_server }}
+      SPLUNK_FORWARD_SERVER_{{ ( loop.index - 1) }}: {{ forward_server }}
 {% endif %}
 {% endfor %}
       SPLUNK_USER: root

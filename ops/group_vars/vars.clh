@@ -66,7 +66,7 @@ prom_persistent_vol_name: 'clh-db-data'
 prom_persistent_vol_size: '10GB'
 
 # Central Logging configuration
-logspout_version: 'master'
+logspout_version: 'v3.2.4'
 
 # Environment configuration
 # Leave proxy settings empty if proxy is not required
@@ -77,7 +77,7 @@ env:
 #  no_proxy: '/var/run/docker.sock,localhost,am2.cloudra.local,10.10.174.'
 
 #
-# splunk integration
+# Monitoring
 #
 
 # designates a subfolder in  <homedir>/templates/splunk, this folder must contain three files (name is hardcoded)
@@ -87,4 +87,4 @@ env:
 
 # if splunk_architecture is not defined, the playbook splunk.yml will not do anything
 
-splunk_architecture: arch1
+monitoring_stack: splunk
