@@ -36,11 +36,11 @@
 
         - name: Download vSphere Docker Volume Service Installer
           win_uri:
-            url: https://raw.githubusercontent.com/vmware/vsphere-storage-for-docker/master/install-vdvs.ps1 
+            url: "{{ windows_vdvs_ps }}"
             dest: "{{ windows_vdvs_directory }}install-vdvs.ps1"
 
         - name: Install Windows vSphere Docker Volume Service
-          win_shell: .\install-vdvs.ps1 https://vmware.bintray.com/vDVS/vsphere-storage-for-docker_windows_{{ windows_vdvs_version }}.zip
+          win_shell: .\install-vdvs.ps1 {{ windows_vdvs_path }}_{{ windows_vdvs_version }}.zip
           args:
             chdir: "{{ windows_vdvs_directory }}"
 
