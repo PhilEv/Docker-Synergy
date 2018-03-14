@@ -36,7 +36,6 @@ services:
       SPLUNK_ADD: "tcp 1514 -sourcetype ucp"
       SPLUNK_ADD_1: monitor -sourcetype authlog -source /docker_host/log/secure
       SPLUNK_ADD_2: monitor -sourcetype syslog -source /docker_host/log/messages
-#     SPLUNK_ADD:   monitor /docker_host/log -auth {{ splunk_architecture_admin_name }}:{{ splunk_architecture_admin_pass }}
     volumes:
       - vsplunkuf-opt-splunk-etc:/opt/splunk/etc
       - vsplunkuf-opt-splunk-var:/opt/splunk/var      
