@@ -3,22 +3,26 @@
 vcenter_hostname: 'vcenter.cloudra.local'
 vcenter_username: 'administrator@synergy.local'
 vcenter_validate_certs: 'no'
-datacenter: 'DC_CLH'
+datacenter: 'NameOfDatacenter'
 vm_username: 'root'
-vm_template: 'syn-tpl-rhel740'
-vm_portgroup: dpgVLAN60
+vm_template: 'linux-template-name'
+vm_portgroup: 'NameOfPortGroup 
 
 # the folder name is understood relative to the selected datacenter
-folder_name: '/clh'
-datastores: ['Docker2_CLH']
+folder_name: '/NameOfFolder'
+datastores: ['NameOfDataStore']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.21' 
 
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
 enable_windows: false
-win_vm_template: 'nm-win2016-template'
+win_vm_template: 'windows-template-name'
 win_username: 'Administrator'
+windows_vdvs_ps: 'https://raw.githubusercontent.com/vmware/vsphere-storage-for-docker/master/install-vdvs.ps1'
+windows_vdvs_path: 'https://vmware.bintray.com/vDVS/vsphere-storage-for-docker_windows_'
+windows_vdvs_version: '0.21' # was 0.17
+windows_vdvs_directory: 'C:\Users\Administrator\Downloads\'
 
 # Networking
 nic_name: 'ens192'
@@ -62,7 +66,7 @@ cadvisor_version: 'v0.25.0'
 node_exporter_version: 'v1.14.0'
 prometheus_version: 'v1.7.1'
 grafana_version: '4.4.3'
-prom_persistent_vol_name: 'clh-db-data'
+prom_persistent_vol_name: 'prom-db-data'
 prom_persistent_vol_size: '10GB'
 
 # Central Logging configuration
