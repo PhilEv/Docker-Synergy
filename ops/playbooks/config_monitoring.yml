@@ -37,7 +37,7 @@
 
     - name: Configure all VMS to send their logs to the logger VM
       template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf
-      when: inventory_hostname in groups.vms
+      when: inventory_hostname in groups.vms and inventory_hostname not in groups.logger
       notify: Restart Rsyslog
 
     - name: Copy monitoring files to UCP

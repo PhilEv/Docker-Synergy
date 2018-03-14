@@ -25,4 +25,5 @@ splunk_architecture_syslog_ports:
 # splunk setup
 #
 splunk_architecture_forward_servers:
-  - clh2-ansible.cloudra.local:9997
+  - splunk-indexer1.cloudra.local:9997
+  - splunk-indexer2.cloudra.local:9997
