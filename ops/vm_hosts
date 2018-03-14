@@ -1,11 +1,11 @@
 ## UCP
 [ucp_main]
-hpe-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-hpe-1.cloudra.local'
+clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
 
 [ucp]
-hpe-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-hpe-1.cloudra.local'
-hpe-ucp02 ip_addr='10.60.59.12/16' esxi_host='esxi-hpe-2.cloudra.local'
-hpe-ucp03 ip_addr='10.60.59.13/16' esxi_host='esxi-hpe-3.cloudra.local'
+clh-ucp01 ip_addr='10.60.59.11/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-ucp02 ip_addr='10.60.59.12/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-ucp03 ip_addr='10.60.59.13/16' esxi_host='esxi-clh-3.cloudra.local'
 
 [ucp:vars]
 cpus='4'
@@ -14,12 +14,12 @@ disk2_size='500'
 
 # DTR
 [dtr_main]
-hpe-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-hpe-1.cloudra.local'
+clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
 
 [dtr]
-hpe-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-hpe-1.cloudra.local'
-hpe-dtr02 ip_addr='10.60.59.15/16' esxi_host='esxi-hpe-2.cloudra.local'
-hpe-dtr03 ip_addr='10.60.59.16/16' esxi_host='esxi-hpe-3.cloudra.local'
+clh-dtr01 ip_addr='10.60.59.14/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-dtr02 ip_addr='10.60.59.15/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-dtr03 ip_addr='10.60.59.16/16' esxi_host='esxi-clh-3.cloudra.local'
 
 [dtr:vars]
 cpus='2' 
@@ -28,9 +28,9 @@ disk2_size='500'
 
 ## WORKER
 [worker]
-hpe-worker01 ip_addr='10.60.59.21/16' esxi_host='esxi-hpe-1.cloudra.local'
-hpe-worker02 ip_addr='10.60.59.22/16' esxi_host='esxi-hpe-2.cloudra.local'
-hpe-worker03 ip_addr='10.60.59.23/16' esxi_host='esxi-hpe-3.cloudra.local'
+clh-worker01 ip_addr='10.60.59.21/16' esxi_host='esxi-clh-1.cloudra.local'
+clh-worker02 ip_addr='10.60.59.22/16' esxi_host='esxi-clh-2.cloudra.local'
+clh-worker03 ip_addr='10.60.59.23/16' esxi_host='esxi-clh-3.cloudra.local'
 
 [worker:vars]
 cpus='4'
@@ -39,18 +39,18 @@ disk2_size='500'
 
 ## LOAD BALANCERS
 [ucp_lb]
-hpe-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-hpe-1.cloudra.local'
+clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
 
 [dtr_lb]
-hpe-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-hpe-2.cloudra.local'
+clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
 
 [worker_lb]
-hpe-worker ip_addr='10.60.59.19/16' esxi_host='esxi-hpe-3.cloudra.local'
+clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
 
 [lbs]
-hpe-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-hpe-1.cloudra.local'
-hpe-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-hpe-2.cloudra.local'
-hpe-worker ip_addr='10.60.59.19/16' esxi_host='esxi-hpe-3.cloudra.local'
+clh-ucp ip_addr='10.60.59.17/16'    esxi_host='esxi-clh-1.cloudra.local'
+clh-dtr ip_addr='10.60.59.18/16'    esxi_host='esxi-clh-2.cloudra.local'
+clh-worker ip_addr='10.60.59.19/16' esxi_host='esxi-clh-3.cloudra.local'
 
 [lbs:vars]
 cpus='2'
@@ -62,7 +62,7 @@ dtr
 worker
 
 [nfs]
-hpe-nfs ip_addr='10.60.59.20/16'    esxi_host='esxi-hpe-3.cloudra.local'
+clh-nfs ip_addr='10.60.59.20/16'    esxi_host='esxi-clh-3.cloudra.local'
 
 [nfs:vars]
 cpus='2'
@@ -70,7 +70,7 @@ ram='4096'
 disk2_size='500'
 
 [logger]
-hpe-logger ip_addr='10.60.59.24/16' esxi_host='esxi-hpe-2.cloudra.local'
+clh-logger ip_addr='10.60.59.24/16' esxi_host='esxi-clh-2.cloudra.local'
 
 [logger:vars]
 cpus='2'

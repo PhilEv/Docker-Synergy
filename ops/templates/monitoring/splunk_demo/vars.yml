@@ -24,4 +24,4 @@ splunk_architecture_syslog_ports:
 # indexers where the universal forwarders send the collected data
 #
 splunk_architecture_forward_servers:
-  - clh-ucp01.cloudra.local:9997
+  - "{{ groups.ucp[0] }}.{{ domain_name }}:9997"

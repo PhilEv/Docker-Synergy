@@ -5,12 +5,12 @@ vcenter_username: 'administrator@synergy.local'
 vcenter_validate_certs: 'no'
 datacenter: 'NameOfDatacenter'
 vm_username: 'root'
-vm_template: 'linux-template-name'
-vm_portgroup: 'NameOfPortGroup 
+vm_template: 'syn-tpl-rhel740'
+vm_portgroup: 'dpgVLAN60'
 
 # the folder name is understood relative to the selected datacenter
-folder_name: '/NameOfFolder'
-datastores: ['NameOfDataStore']
+folder_name: '/clh'
+datastores: ['Docker2_CLH']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.21' 
@@ -58,8 +58,8 @@ ucp_username: 'admin'
 # if ucp_certs_dir is not defined, UCP generates self-signed certificates
 # if dtr_certs_dir is undefined, DTR is installed using the --ucp-insecure-tls switch
 
-#ucp_certs_dir: '/root/certs/ucp_certs' 
-#dtr_certs_dir: '/root/certs/dtr_certs'
+ucp_certs_dir: '/root/certs/ucp_certs' 
+dtr_certs_dir: '/root/certs/dtr_certs'
 
 # Monitoring configuration
 cadvisor_version: 'v0.25.0'
