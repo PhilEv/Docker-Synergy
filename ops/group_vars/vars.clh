@@ -3,7 +3,7 @@
 vcenter_hostname: 'vcenter.cloudra.local'
 vcenter_username: 'administrator@synergy.local'
 vcenter_validate_certs: 'no'
-datacenter: 'NameOfDatacenter'
+datacenter: 'DC_CLH'
 vm_username: 'root'
 vm_template: 'syn-tpl-rhel740'
 vm_portgroup: 'dpgVLAN60'
