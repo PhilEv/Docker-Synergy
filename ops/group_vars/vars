@@ -87,4 +87,4 @@ env:
 
 # if splunk_architecture is not defined, the playbook splunk.yml will not do anything
 
-monitoring_stack: splunk
+monitoring_stack: splunk_demo
