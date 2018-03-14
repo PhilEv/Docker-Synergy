@@ -13,12 +13,12 @@ folder_name: '/clh'
 datastores: ['Docker2_CLH']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
-vsphere_plugin_version: '0.20' 
+vsphere_plugin_version: '0.21' 
 
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
 enable_windows: false
-#win_vm_template: 'nm-win2016-template'
-#win_username: 'Administrator'
+win_vm_template: 'nm-win2016-template'
+win_username: 'Administrator'
 
 # Networking
 nic_name: 'ens192'
@@ -54,8 +54,8 @@ ucp_username: 'admin'
 # if ucp_certs_dir is not defined, UCP generates self-signed certificates
 # if dtr_certs_dir is undefined, DTR is installed using the --ucp-insecure-tls switch
 
-ucp_certs_dir: '/root/certs/ucp_certs' 
-dtr_certs_dir: '/root/certs/dtr_certs'
+#ucp_certs_dir: '/root/certs/ucp_certs' 
+#dtr_certs_dir: '/root/certs/dtr_certs'
 
 # Monitoring configuration
 cadvisor_version: 'v0.25.0'
@@ -87,4 +87,4 @@ env:
 
 # if splunk_architecture is not defined, the playbook splunk.yml will not do anything
 
-monitoring_stack: splunk
+monitoring_stack: splunk_demo
