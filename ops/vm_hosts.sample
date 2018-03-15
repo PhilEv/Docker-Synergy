@@ -89,6 +89,9 @@ disk1_size='100'
 
 ## WINDOWS WORKER
 [win_worker]
+hpe-worker04 ip_addr='10.60.59.25/16' esxi_host='esxi-hpe-1.cloudra.local'
+hpe-worker05 ip_addr='10.60.59.26/16' esxi_host='esxi-hpe-2.cloudra.local'
+hpe-worker06 ip_addr='10.60.59.27/16' esxi_host='esxi-hpe-3.cloudra.local'
 
 [win_worker:vars]
 cpus='4'
