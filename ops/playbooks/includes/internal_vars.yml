@@ -35,3 +35,7 @@ internal_worker_ports:
 
 internal_dtr_ports:
   - "{{ internal_dtr200_ports }}"
+
+internal_syslog_ports:
+  - 514/tcp
+  - 514/udp

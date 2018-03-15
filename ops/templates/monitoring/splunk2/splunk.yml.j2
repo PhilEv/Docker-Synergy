@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  splunkenterprise:
+    #build: .
+    hostname: splunkenterprise
+    image: splunk/splunk:7.0.0-monitor
+    environment:
+      SPLUNK_START_ARGS: --accept-license --answer-yes
+      SPLUNK_ENABLE_LISTEN: 9997
+      SPLUNK_ADD: "tcp 1514 -sourcetype ucp"
+    volumes:
+      - vsplunk-opt-splunk-etc:/opt/splunk/etc
+      - vsplunk-opt-splunk-var:/opt/splunk/var
+    ports:
+      - "8000:8000"
+      - "9997:9997"
+      - "8088:8088"
+      - "1514:1514"
+
+  collectorfordocker:
+    container_name: collectorfordocker
+#    image: outcoldsolutions/collectorfordocker:3.0.86.180207
+    image: outcoldsolutions/collectorfordocker:latest
+    volumes:
+      - /sys/fs/cgroup:/rootfs/sys/fs/cgroup:ro
+      - /proc:/rootfs/proc:ro
+      - /var/log:/rootfs/var/log:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - collector_data:/data/
+    environment:
+      - COLLECTOR__SPLUNK_URL=output.splunk__url=https://splunkenterprise:8088/services/collector/event/1.0
+      - COLLECTOR__SPLUNK_TOKEN=output.splunk__token={{ splunk_architecture_token }}
+      - COLLECTOR__SPLUNK_INSECURE=output.splunk__insecure=true
+      - COLLECTOR__EULA=general__acceptEULA=true
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
+    privileged: true
+
+volumes:
+  vsplunk-opt-splunk-etc:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
+  vsplunk-opt-splunk-var:
+    driver: vsphere
+    driver_opts:
+      size: 10GB
+  collector_data:
