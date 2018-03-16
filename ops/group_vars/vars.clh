@@ -16,11 +16,11 @@ disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.21' 
 
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
-enable_windows: false
-win_vm_template: 'windows-template-name'
+enable_windows: true
+win_vm_template: 'clh-win-tpl'
 win_username: 'Administrator'
 windows_vdvs_ps: 'https://raw.githubusercontent.com/vmware/vsphere-storage-for-docker/master/install-vdvs.ps1'
-windows_vdvs_path: 'https://vmware.bintray.com/vDVS/vsphere-storage-for-docker_windows_'
+windows_vdvs_path: 'https://vmware.bintray.com/vDVS/vsphere-storage-for-docker_windows'
 windows_vdvs_version: '0.21' # was 0.17
 windows_vdvs_directory: 'C:\Users\Administrator\Downloads\'
 
