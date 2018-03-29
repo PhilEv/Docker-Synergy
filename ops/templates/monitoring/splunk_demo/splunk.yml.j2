@@ -19,32 +19,6 @@ services:
       placement:
        constraints: [node.role == manager]
 
-  splunkuniversalforwarder:
-#    will use .Node.Hostname  for the hostname when this is available
-    hostname: "spuf-{{ '{{' }}.Node.ID{{ '}}' }}"
-    image: splunk/universalforwarder:{{ splunk_architecture_splunk_version }}
-    environment:
-      SPLUNK_START_ARGS: --accept-license --answer-yes
-{% for forward_server in splunk_architecture_forward_servers %}
-{% if loop.index == 1 %}
-      SPLUNK_FORWARD_SERVER: {{ forward_server }}
-{% else %}
-      SPLUNK_FORWARD_SERVER_{{ loop.index - 1 }}: {{ forward_server }}
-{% endif %}
-{% endfor %}
-      SPLUNK_USER: root
-      SPLUNK_ADD: "tcp 1514 -sourcetype ucp"
-      SPLUNK_ADD_1: monitor -sourcetype authlog -source /docker_host/log/secure
-      SPLUNK_ADD_2: monitor -sourcetype syslog -source /docker_host/log/messages
-    volumes:
-      - vsplunkuf-opt-splunk-etc:/opt/splunk/etc
-      - vsplunkuf-opt-splunk-var:/opt/splunk/var      
-      - /var/lib/docker/containers:/host/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/log:/docker_host/log:ro
-    deploy:
-      mode: global
-    
 volumes:
   vsplunk-opt-splunk-etc:
     driver: vsphere
@@ -54,8 +28,3 @@ volumes:
     driver: vsphere
     driver_opts:
       size: 10GB
-#
-# universal forwarders use local volumes
-#
-  vsplunkuf-opt-splunk-etc:
-  vsplunkuf-opt-splunk-var:

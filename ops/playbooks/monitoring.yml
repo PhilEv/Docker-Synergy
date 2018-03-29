@@ -38,7 +38,7 @@
         file: ../templates/monitoring/{{ monitoring_stack }}/vars.yml
 
 #
-# section for the logger VM which is used to collect syslog from the ESX inrastructure and the UCP syslogs
+# section for the logger VM which is used to collect syslog from the ESX infrastructure and the UCP syslogs
 #
     - block:
 
@@ -53,30 +53,53 @@
       when: inventory_hostname in groups.logger
 
 #
-# Section for Non Docker hosts
+# Section for all Linux hosts
 #
     - block:
 
-      - name: Copy Universal forwarder Pkg 
+      - name: Copy Universal forwarder for Linux Pkg
         copy:
-          src: "../files/{{ splunk_architecture_universal_forwarder_package }}"
+          src: "../files/splunk/linux/{{ splunk_architecture_universal_forwarder_package }}.rpm"
           dest: /root/scripts/monitoring/
 
-      - name: Copy script file for non docker hosts
+      - name: Copy Splunk Universal Forwarder for Linux start script
         template:
-          src: ../templates/monitoring/{{ monitoring_stack }}/nondocker.sh.j2
-          dest: /root/scripts/monitoring/nondocker.sh
-
+          src: ../templates/monitoring/{{ monitoring_stack }}/start_uf_linux.sh.j2
+          dest: /root/scripts/monitoring/start_uf_linux.sh
+        notify: RestartLinuxSplunkUF
       - file:
-          path: /root/scripts/monitoring/nondocker.sh
+          path: /root/scripts/monitoring/start_uf_linux.sh
           mode: 0744
+        notify: RestartLinuxSplunkUF
 
-      - name: Install and Start Universal Forwarder
-        shell: /root/scripts/monitoring/nondocker.sh
-        args:
-          chdir: /root/scripts/monitoring
-      
-      when: inventory_hostname not in groups.docker
+      - name: Install Universal Forwarder for Linux
+        yum:
+          name:  /root/scripts/monitoring//{{ splunk_architecture_universal_forwarder_package }}.rpm
+          state: present
+
+      - name: Copy Splunk Universal Forwarder for Linux configuration files
+        copy:
+          src: "../files/splunk/linux/SPLUNK_HOME/"
+          dest: "/opt/splunkforwarder/"
+        notify: RestartLinuxSplunkUF
+
+      - name: Copy Splunk Universal Forwarder for Linux Technical Add-ons on Docker hosts
+        copy:
+          src: "../files/splunk/linux/DOCKER_TAS/"
+          dest: "/opt/splunkforwarder/"
+          mode: preserve
+        notify: RestartLinuxSplunkUF
+        when: inventory_hostname in groups.docker
+
+      - name: Copy output.conf from template folder if present
+        template:
+           src: "{{ item }}"
+           dest: "/opt/splunkforwarder/etc/system/local/outputs.conf"
+        with_first_found:
+          - ../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2
+        notify: RestartLinuxSplunkUF
+
+      when: inventory_hostname in groups.vms
       
 # end of section of non docker hosts
 
@@ -90,15 +113,23 @@
           path: /root/scripts/monitoring
           state: directory
 
-      - name: Copy script file for non docker hosts
+      - name: Copy script file for Docker hosts
         template:
           src: ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
           dest: /root/scripts/monitoring/splunk.yml
-
+        with_first_found:
+          - files:
+              - ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
+            skip: true
+ 
       - name: Deploy Splunk Stack
         command: docker stack deploy --compose-file splunk.yml {{ monitoring_stack | default ('splunk') }}
         args:
           chdir: /root/scripts/monitoring
+        with_first_found:
+          - files:
+              - ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
+            skip: true
 
       when: inventory_hostname == ucp_instance
 
@@ -110,3 +141,8 @@
   - debug: msg="No splunk integration wanted"
     when: monitoring_stack is not defined
 
+  handlers:
+  - name: RestartLinuxSplunkUF
+    shell: /root/scripts/monitoring/start_uf_linux.sh
+    args:
+      chdir: /root/scripts/monitoring

@@ -83,12 +83,26 @@ env:
 #
 # Monitoring
 #
-
-# designates a subfolder in  <homedir>/templates/splunk, this folder must contain three files (name is hardcoded)
-#   splunk.yml.j2, which is a stack deploying the splunk integration (swarm orchestration)
-#   vars.yml, which contains variables which may be used by the splunk.yml.j2 file
-#   nondocker.sh which is a script that will install and configure the universal forwarder on a non docker host
-
-# if splunk_architecture is not defined, the playbook splunk.yml will not do anything
+#
+# monitoring_stack: <value> 
+#   - if not defined, the playbooks monitoring.yml and monitoring_win.yml will not do anything
+#   - if defined, it should ve set to 'splunk' or 'splunk_demo' 
+#   - if set to 'splunk_demo', the playbook monitoring.yml will deploy a splunk instance in the docker cluster, the
+#        UI can be reached at http://<any docker node in the swarm>:8000, password is admin/changeme
+#   - if set to 'splunk', the splunk deployment is pre-existing and the universal forwarders will forward the data they collect to
+#        all the indexers specified with the variable splunk_architecture_forward_servers
+#
 
 monitoring_stack: splunk_demo
+
+#
+#monitoring_stack: splunk
+#splunk_architecture_forward_servers:
+#  - splunk-indexer1.cloudra.local:9997
+#  - splunk-indexer2.cloudra.local:9997
+#
+# define splunk_ssl to enable SSL between the indexers and the universal forwaders. This is only supported when choosing splunk (vs splunk_demo)
+#   and you need to enable SSL in your inders manually
+# if you don't want SSL, comment/undefine the splunk_ssl: line
+#
+#splunk_ssl: yes

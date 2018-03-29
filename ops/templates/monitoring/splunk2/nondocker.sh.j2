@@ -1,9 +1,0 @@
-rpm -i {{ splunk_architecture_universal_forwarder_package }}
-export SPLUNK_HOME=/opt/splunkforwarder/
-cd $SPLUNK_HOME/bin
-./splunk  --accept-license --answer-yes add  monitor -sourcetype authlog -source /var/log/secure
-./splunk add  monitor -sourcetype syslog -source /var/log/messages
-{% for forward_server in splunk_architecture_forward_servers %}
-./splunk --accept-license --answer-yes add forward-server {{ forward_server }}
-{% endfor %}
-./splunk start

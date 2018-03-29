@@ -17,7 +17,7 @@ vsphere_plugin_version: '0.21'
 
 # enable_windows: if defined true the creatation of windows 2016 worker nodes will be actioned, default is false
 enable_windows: true
-win_vm_template: 'clh-win-tpl'
+win_vm_template: 'clh-win-1607'
 win_username: 'Administrator'
 windows_vdvs_ps: 'https://raw.githubusercontent.com/vmware/vsphere-storage-for-docker/master/install-vdvs.ps1'
 windows_vdvs_path: 'https://vmware.bintray.com/vDVS/vsphere-storage-for-docker_windows'
@@ -81,14 +81,8 @@ env:
 #  no_proxy: '/var/run/docker.sock,localhost,am2.cloudra.local,10.10.174.'
 
 #
-# Monitoring
+# splunk stuff
 #
-
-# designates a subfolder in  <homedir>/templates/splunk, this folder must contain three files (name is hardcoded)
-#   splunk.yml.j2, which is a stack deploying the splunk integration (swarm orchestration)
-#   vars.yml, which contains variables which may be used by the splunk.yml.j2 file
-#   nondocker.sh which is a script that will install and configure the universal forwarder on a non docker host
-
-# if splunk_architecture is not defined, the playbook splunk.yml will not do anything
-
-monitoring_stack: splunk_demo
+monitoring_stack: splunk
+splunk_architecture_forward_servers:
+  - clh2-ansible.cloudra.local:9997
