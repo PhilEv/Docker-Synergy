@@ -91,13 +91,19 @@
         notify: RestartLinuxSplunkUF
         when: inventory_hostname in groups.docker
 
+      - local_action: stat path="../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2"
+        register: res
+
+      - name: Debug
+        debug: var=res.stat.exists
+        when: _debug is defined
+
       - name: Copy output.conf from template folder if present
         template:
-           src: "{{ item }}"
+           src: "../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2"
            dest: "/opt/splunkforwarder/etc/system/local/outputs.conf"
-        with_first_found:
-          - ../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2
         notify: RestartLinuxSplunkUF
+        when: res.stat.exists == true
 
       when: inventory_hostname in groups.vms
       

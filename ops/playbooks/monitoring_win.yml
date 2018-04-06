@@ -77,14 +77,19 @@
           dest: "c:/Program Files/SplunkUniversalForwarder/"
         notify: RestartWindowsSplunkUF
 
+      - local_action: stat path="../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2"
+        register: res
+
+      - name: Debug
+        debug: var=res.stat.exists
+        when: _debug is defined
+
       - name: Copy output.conf from template folder if present
         win_template:
-           src: "{{ item }}"
+           src: "../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2"
            dest: "c:/Program Files/SplunkUniversalForwarder/etc/system/local/outputs.conf"
-        with_first_found:
-          - ../templates/monitoring/{{ monitoring_stack }}/outputs.conf.j2
         notify: RestartWindowsSplunkUF
-
+        when: res.stat.exists == true
 
       - name: Start Splunk Forwarder Service
         win_service:
