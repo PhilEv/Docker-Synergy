@@ -14,16 +14,20 @@
 # limitations under the License.
 ###
 #
-# Restore UCP
+# Restore swarm
 #
 systemctl stop docker
 cd /var/lib/docker/swarm/
 rm -Rf *
-tar -xvf /tmp/backup_swarm.tar
+ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_swarm }}" | zcat | \
+   tar -xvf -
+
 systemctl start docker
 docker swarm init --force-new-cluster --advertise-addr {{ ip_addr  | ipaddr('address') }}:2377
 		
-# need to uninstall  UCP manually
+#
+# Perform some cleanup
+#
 svcs=$(docker service ls --format {{ '{{' }}.Name{{ '}}' }} | grep ucp\-)
 for svc in $svcs  ; do docker service rm $svc ; done
 
@@ -34,10 +38,15 @@ for id in $ids ; do docker rm -f $id ; done
 vols=$(docker volume ls | grep ucp- | awk '{print $2}')
 for vol in $vols ; do docker volume rm $vol ; done
 		
-# restore UCP
-docker container run --rm -i --name ucp -v /var/run/docker.sock:/var/run/docker.sock  docker/ucp:{{ ucp_version }} restore < /tmp/backup_ucp.tar
+#
+# Restore UCP from backup
+#
+ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_ucp }}" | zcat | \
+    docker container run  -i --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock  docker/ucp:{{ ucp_version }} restore 
 		
+#
 # restart docker
+#
 systemctl restart docker
 		
 nodesdown=$(docker node ls  --format '{{ '{{' }}.Status{{ '}}'}} {{ '{{' }}.ID{{ '}}' }}' | awk '/Down / {print $2}')

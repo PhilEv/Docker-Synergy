@@ -7,7 +7,7 @@
 #
 
 
-- name: "Find DTR: Init"
+- name: "Find UCP: Init"
   set_fact:
     checks:
       status: -1

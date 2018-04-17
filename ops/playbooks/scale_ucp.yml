@@ -15,6 +15,7 @@
 ###
 ---
 - hosts: ucp
+  serial: 1
   gather_facts: false
 
   vars_files:

@@ -32,8 +32,15 @@
     - include_tasks: includes/find_ucp.yml ping_servers="{{ groups.ucp }}"
     - debug: var=ucp_instance
       when: _debug is defined
+    - fail:
+      when: ucp_instance == ".none."
 
   roles:
+    - role: get-dtr-replica
+      ARG_UCP_IP:        "{{ ucp_instance }}.{{domain_name}}"
+      ARG_UCP_USER:      "{{ ucp_username }}"
+      ARG_UCP_PASSWORD:  "{{ ucp_password }}"
+
     - role: worker
       ARG_UCP_IP:         "{{ ucp_instance }}.{{ domain_name }}"
       ARG_UCP_USER:       "{{ ucp_username }}"
@@ -44,25 +51,54 @@
 
 
   tasks:
+#
+# exit if there is an existing DTR replica
+#
+    - debug: var=existing_dtr_replica_id
+      when: _debug is defined
 
-    - name: Copy the DTR meta data
-      copy:
-        src: "{{ backup_dtr_meta }}/"
-        dest: /tmp/backup_dtr_meta.tar
+#
+# configure passwordless ssh to our ansible box
+#
+    - name: Register key
+      stat: path=/root/.ssh/id_rsa
+      register: key
+    - name: Create keypairs
+      shell: ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ''
+      when: key.stat.exists == False
+    - name: Fetch all public ssh keys
+      shell: cat ~/.ssh/id_rsa.pub
+      register: ssh_keys
+    - name: Deploy keys on localhost
+      authorized_key: user=root key="{{ item }}"
+      delegate_to: localhost
+      with_items:
+        - "{{ ssh_keys.stdout }}"
 
     - name: Create script directory
       file:
         path: /root/scripts
         state: directory
-
+    - name: Copy UCP root CA Certificate if one is specified
+      copy:
+        src: "{{ ucp_certs_dir }}/ca.pem"
+        dest: /root/scripts/ca.pem
+      when: ucp_certs_dir is defined
     - name: Copy restore script to target
-      template: src=../templates/restore_dtr.sh.j2 dest=/root/scripts/restore_dtr.sh
-
+      template: src=../templates/restore_dtr_metadata.sh.j2 dest=/root/scripts/restore_dtr_metadata.sh
     - file:
-        path: /root/scripts/restore_dtr.sh
+        path: /root/scripts/restore_dtr_metadata.sh
         mode: 0744
 
     - name: restore DTR
-      shell: /root/scripts/restore_dtr.sh {{ backup_dtr_id }}
+      shell: /root/scripts/restore_dtr_metadata.sh {{ backup_dtr_id }}
+      environment:
+        UCP_USERNAME: "{{ucp_username}}"
+        UCP_PASSWORD: "{{ucp_password}}"
       register: res
+      when: existing_dtr_replica_id == "0"
 
+
+    - debug:
+        msg: "Existing DTR replica detected with id {{ existing_dtr_replica_id }} . Did not restore DTR"
+      when: existing_dtr_replica_id != "0"

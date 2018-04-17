@@ -14,20 +14,26 @@
 # limitations under the License.
 ###
 #
-# Restore DTR
+# Restore DTR metadata
 #
-#docker run -it --rm docker/dtr:2.4.0 destroy --ucp-insecure-tls --ucp-url https://svt2-ucp.am2.cloudra.local --ucp-username admin --ucp-password Just4m3hp
 
 replica_id=$1
-docker run -i --rm docker/dtr:{{ dtr_version }} restore \
+if [ -e ./ca.pem ]
+then
+  ucp_insecure_switch=""
+  export UCP_CA=$(cat ./ca.pem)
+  env_switch="--env UCP_CA"
+else
+  ucp_insecure_switch="--ucp-insecure-tls"
+  env_switch=""
+fi
+
+ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_dtr_meta }}" | zcat | \
+  docker run -i --rm --env UCP_USERNAME --env UCP_PASSWORD $env_switch docker/dtr:{{ dtr_version }} restore \
     --ucp-url https://{{ ucp_instance }}.{{ domain_name }} \
-    --ucp-insecure-tls \
-    --ucp-username admin \
-    --ucp-password Just4m3hp \
+    $ucp_insecure_switch \
     --ucp-node {{ groups.dtr_main[0] }}.{{ domain_name }} \
     --replica-id ${replica_id}  \
     --dtr-external-url https://{{ groups.dtr_lb[0] }}.{{ domain_name }} \
     --nfs-storage-url nfs://{{ groups.nfs[0] }}.{{ domain_name }}/docker-images \
-    {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }} \
-    < /tmp/backup_dtr_meta.tar
-
+    {{ http_proxy_switch }} {{ https_proxy_switch }} {{ no_proxy_switch }} 

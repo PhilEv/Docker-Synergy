@@ -14,19 +14,17 @@
 # limitations under the License.
 ###
 #
-# perform a backup of the DTR metadata and Data
+# perform a backup of UCP
 #
 ucp_id=$1
 backup_name=$2
-backup_meta=${backup_name}_meta.tar 
-backup_data=${backup_name}_data.tar 
- 
+backup_file=${backup_name}.tgz
+
+#
+# send the compressed data to a remote SSH server (the anible box)
+# 
  
 # backup UCP
-docker container run --log-driver none --rm  --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:{{ ucp_version }} backup --id $ucp_id > /tmp/backup_ucp.tar 
-
-# save the tar files in the backup volume 
-docker run  --rm -v{{ site_backup_volume_name }}:/mnt -v/tmp/backup_ucp.tar:/tmp/backup_ucp.tar --env FN=$backup_data alpine sh -c 'cp /tmp/backup_ucp.tar /mnt/$FN' 
- 
-#verify that the backup was saved 
-docker run --rm -v{{ site_backup_volume_name }}:/mnt alpine sh -c 'ls -lrt /mnt' 
+docker container run --log-driver none --rm  --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp:{{ detected_ucp_version }} \
+   backup --id $ucp_id \
+| gzip - | ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat >{{ backup_dest }}/${backup_file}"

@@ -14,8 +14,18 @@
 # limitations under the License.
 ###
 #
-# return the  ID of the UCP instance running on this machine
+# return the DTR replica ID running on the target machine
 #
-ucp_version=$1
-ucp_id=$(docker container run --log-driver none --rm  --name ucp   -v /var/run/docker.sock:/var/run/docker.sock   docker/ucp:${ucp_version} id )
-echo $ucp_id
+info="$1"
+case $info in
+"replica")
+  res=$(docker ps --format '{{ '{{' }} .Names {{ '}}' }}' | grep dtr-registry | awk -F'-' '{print $3}') 
+  ;;
+"version")
+  res=$(docker ps --format '{{ '{{' }} .Image {{ '}}' }}' | grep dtr-registry | awk -F':' '{print $2}')
+  ;;
+*)
+  res="unknown DTR information ($info) wanted" 
+  ;;
+esac
+echo $res

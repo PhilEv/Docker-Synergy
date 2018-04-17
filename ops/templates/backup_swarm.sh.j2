@@ -14,31 +14,27 @@
 # limitations under the License.
 ###
 #
-# perform a backup of the DTR metadata and Data
+# perform a backup of the swarm data
 #
 ucp_id=$1
 backup_name=$2
-backup_data=${backup_name}_data.tar 
+backup_file=${backup_name}.tgz
+logfile=backup.log
  
-#unset DOCKER_CERT_PATH
-#unset DOCKER_HOST
-#unset DOCKER_TLS_VERIFY
+backup_offline="{{ swarm_backup_offline }}"
 
 #
 # Stop docker before taking the backup
 #
-systemctl stop docker
- 
-# backup UCP
-(cd /var/lib/docker/swarm ; tar -cvf /tmp/backup_swarm.tar .)
-
-#
-# Restart Docker
-#
-systemctl start docker
-
-# save the tar files in the backup volume 
-docker run  --rm -v{{ site_backup_volume_name }}:/mnt -v/tmp/backup_swarm.tar:/tmp/data.tar --env FN=$backup_data alpine sh -c 'cp /tmp/data.tar /mnt/$FN' 
- 
-#verify that the backup was saved 
-docker run --rm -v{{ site_backup_volume_name }}:/mnt alpine sh -c 'ls -lrt /mnt' 
+if [ "$backup_offline" == "True" ]
+then
+  echo $(date) Offline backup starting, docker stopped. backup_offline = ${backup_offline} >>$logfile
+  systemctl stop docker
+  (cd /var/lib/docker/swarm ; tar -czvf - . |  ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat >{{ backup_dest }}/${backup_file}" )
+  systemctl start docker
+  echo $(date) Offline backup finished backup_offline = ${backup_offline} >>$logfile
+else
+  echo $(date) Online backup starting, backup_offline = ${backup_offline} >>$logfile
+  (cd /var/lib/docker/swarm ; tar -czvf - . |  ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat >{{ backup_dest }}/${backup_file}" )
+  echo $(date) Online backup finished backup_offline = ${backup_offline} >>$logfile
+fi

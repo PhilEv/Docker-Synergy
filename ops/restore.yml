@@ -17,9 +17,9 @@
 # files needed by prometheus must be here before we start the swarm
 - import_playbook: playbooks/config_monitoring_files.yml
 - import_playbook: playbooks/restore_ucp.yml
-- import_playbook: playbooks/restore_dtr_data.yml
-- import_playbook: playbooks/restore_dtr.yml
+- import_playbook: playbooks/restore_dtr_images.yml
+- import_playbook: playbooks/restore_dtr_metadata.yml
 - import_playbook: playbooks/scale_workers.yml
 - import_playbook: playbooks/scale_dtr.yml
 - import_playbook: playbooks/reconfigure_dtr.yml
-#- include: tmp/scale_ucps.yml
+- import_playbook: playbooks/scale_ucp.yml

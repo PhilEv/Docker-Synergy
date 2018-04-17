@@ -2,7 +2,7 @@ version: '3'
 services:
   splunkenterprise:
     hostname: splunkenterprise
-    image: splunk/splunk:{{ splunk_architecture_splunk_version }}
+    image: chris7444/splunk:{{ splunk_architecture_splunk_version }}
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
       SPLUNK_ENABLE_LISTEN: 9997
@@ -13,6 +13,7 @@ services:
     ports:
       - "8000:8000"
       - "9997:9997"
+      - "9998:9998"
       - "8088:8088"
       - "1514:1514"
     deploy:
@@ -27,4 +28,4 @@ volumes:
   vsplunk-opt-splunk-var:
     driver: vsphere
     driver_opts:
-      size: 10GB
+      size: 70GB

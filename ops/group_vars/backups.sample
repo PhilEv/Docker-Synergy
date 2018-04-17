@@ -1,7 +1,7 @@
 #
 # Site backups
 #
-# By default online backups of the swarm are performed. If offline backups are wanted, the playbooks verifies that 
+# By default online backups of the swarm are performed. If offline backups are wanted, the playbooks verifies that
 # there will be enough managers in the cluster to maintain the quorum after shutting down one docker daemon for the duration
 # of the backup. If this is not the case, the backup will not be done.
 #
@@ -13,7 +13,7 @@ backup_swarm: "/root/restore/backup_swarm.tgz"
 backup_ucp: "/root/restore/backup_ucp.tgz"
 backup_dtr_meta: "/root/restore/backup_dtr_meta.tgz"
 backup_dtr_data: "/root/restore/backup_dtr_data.tgz"
-backup_dtr_id: "ad5204e8a4d0"
+backup_dtr_id: "8e7266e788b5"
 backup_dest: "/root/backups"
-backup_server: clh2-ansible
+backup_server: "ip address of your ansible box"
 _debug: "true"

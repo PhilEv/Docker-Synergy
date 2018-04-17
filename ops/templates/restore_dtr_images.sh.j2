@@ -14,7 +14,8 @@
 # limitations under the License.
 ###
 #
-# return the DTR replica ID running on the target machine
+# Restore DTR images (NFS)
 #
-replica_id=$(docker ps --format '{{ '{{' }} .Names {{ '}}' }}' | grep dtr-registry | awk -F'-' '{print $3}') 
-echo $replica_id
+cd "{{ images_folder }}"
+ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_dtr_data }}" | zcat | \
+   tar -xvf -

@@ -1,8 +1,0 @@
----
-# This playbook will create a Docker UCP environment
-
-- import_playbook: playbooks/create_windows_vms.yml
-- import_playbook: playbooks/install_docker_windows.yml
-- import_playbook: playbooks/vsphere_plugin_win_ps.yml
-- import_playbook: playbooks/scale_workers_win.yml
-- import_playbook: playbooks/monitoring_win.yml

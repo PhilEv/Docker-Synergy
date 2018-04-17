@@ -14,15 +14,16 @@
 # limitations under the License.
 ###
 ---
-- hosts: ucp_main
+- hosts: dtr_main 
   gather_facts: false
 
   vars_files:
     - ../group_vars/vars
-    - ../group_vars/backups
     - ../group_vars/vault
+    - ../group_vars/backups
 
-  environment: "{{ env }}"
+  environment:
+    - "{{ env }}"
 
   tasks:
 #
@@ -37,7 +38,7 @@
     - name: Fetch all public ssh keys
       shell: cat ~/.ssh/id_rsa.pub
       register: ssh_keys
-    - name: Deploy keys on Ansible Box
+    - name: Deploy keys on localhost
       authorized_key: user=root key="{{ item }}"
       delegate_to: localhost
       with_items:
@@ -52,52 +53,47 @@
     - name: Store the timestamp
       set_fact:
         timestamp: "{{ timestamp.stdout }}"
-    - name: Creates directory on the VM 
+
+    - name: Creates directory
       file:
         path: /root/scripts
         state: directory
 
-    - set_fact:
-        swarm_backup_offline: "{{ swarm_backup_offline | default('false') }}"
-    - name: Copy backup scripts to backup VM
-      template: src=../templates/backup_swarm.sh.j2 dest=/root/scripts/backup_swarm.sh
+    - name: Copy backup script to backup VM
+      template: src=../templates/backup_dtr_images.sh.j2 dest=/root/scripts/backup_dtr_images.sh
     - file:
-        path: /root/scripts/backup_swarm.sh
+        path: /root/scripts/backup_dtr_images.sh
         mode: 0744
 
+    - name: Copy util to backup VM
+      template: src=../templates/dtr_get_info.sh.j2 dest=/root/scripts/dtr_get_info.sh
+    - file:
+        path: /root/scripts/dtr_get_info.sh
+        mode: 0744
+
+    - name: Get the replica ID
+      shell: /root/scripts/dtr_get_info.sh replica
+      register: res 
+
     - set_fact:
-        backup_name:  "backup_swarm_{{ inventory_hostname }}_{{ timestamp }}"
-      when: backup_name is undefined
+        replica_id: "{{ res.stdout }}" 
 
-#
-# Compute the quorum
-#
-    - name: How many nodes are active now
-      shell: >
-            (
-             docker node ls -f "role=manager" --format "{{ '{{' }}.Status{{ '}}' }}" | grep Ready | wc -l )
-      register: active_nodes
-    - shell: echo $(( ({{ total }}+1)/2))
-      vars:
-        total: "{{ groups['ucp'] | length }}"
-      register: quorum
-    - debug:
-        msg: "total={{ total }} quorum = {{ quorum.stdout }} active = {{ active_nodes.stdout }}"
-      vars:
-        total: "{{ groups['ucp'] | length }}"
-
-    - fail:
-        msg: "Aborting: Reason number of active nodes {{ active_nodes.stdout }} <= quorum = {{ quorum.stdout }} and swarm_backup_online != true"
-      when: active_nodes.stdout <= quorum.stdout and swarm_backup_offline  == "true" 
-     
-    - name: "Backup swarm data now Offline mode {{ swarm_backup_offline }}"
-      shell: /root/scripts/backup_swarm.sh {{ "unused" }} {{ backup_name }}
+    - name: Get the DTR version number
+      shell: /root/scripts/dtr_get_info.sh version
       register: res
 
-    - debug: var=res
-      when: _debug is defined
+    - set_fact:
+        detected_dtr_version: "{{ res.stdout }}"
 
-    - name: Create a temporary directory to receive files that contains metadata
+    - set_fact:
+        backup_name:  "backup_dtr_data_{{ replica_id }}_{{ inventory_hostname }}_{{ timestamp }}"
+      when: backup_name is undefined
+
+    - name: Backup the image data
+      shell: /root/scripts/backup_dtr_images.sh {{ backup_name }}
+      register: res
+
+    - name: Create a temporary directory to receive files that contains backup metadata
       tempfile:
         state: directory
         suffix: temp
@@ -118,10 +114,9 @@
         - ../group_vars/backups
       delegate_to: localhost
 
-    - name: Backup the Metadata as well
+    - name: Save the backup Metadata as well
       archive:
         path:
           - "{{ res.path }}/"
         dest: "{{ backup_dest }}/{{ backup_name }}.vars.tgz"
       delegate_to: localhost
-

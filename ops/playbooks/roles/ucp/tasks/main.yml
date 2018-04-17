@@ -82,6 +82,7 @@
       command: "docker swarm join --token {{ token }} {{ ARG_ADVERTIZE_IP }}"
       retries: 20
       delay: 10
+      failed_when: false
       when: swarm_member == false
 
 #    - name: Join the swarm
