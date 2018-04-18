@@ -1,6 +1,7 @@
 ops/license.lic
-ops/group_vars/vault
 ops/vm_hosts
+ops/group_vars/vault
+ops/group_vars/backups
 ops/group_vars/vars
 ops/*.svt2
 ops/ansible.log
