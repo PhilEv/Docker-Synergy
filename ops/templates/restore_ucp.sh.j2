@@ -13,45 +13,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###
-#
-# Restore swarm
-#
-systemctl stop docker
-cd /var/lib/docker/swarm/
-rm -Rf *
-ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_swarm }}" | zcat | \
-   tar -xvf -
+		
 
-systemctl start docker
-docker swarm init --force-new-cluster --advertise-addr {{ ip_addr  | ipaddr('address') }}:2377
-		
-#
-# Perform some cleanup
-#
-svcs=$(docker service ls --format {{ '{{' }}.Name{{ '}}' }} | grep ucp\-)
-for svc in $svcs  ; do docker service rm $svc ; done
+ucp_only="{{ restore_ucp_only }}"
+ucp_only=${ucp_only,,}
 
-ids=$(docker ps -a  | grep "ucp-" | awk '{print $1}')
-for id in $ids ; do docker rm -f $id ; done
-		
-# delete volumes
-vols=$(docker volume ls | grep ucp- | awk '{print $2}')
-for vol in $vols ; do docker volume rm $vol ; done
-		
 #
 # Restore UCP from backup
 #
 ssh -oStrictHostKeyChecking=no {{ backup_server }} "cat {{ backup_ucp }}" | zcat | \
     docker container run  -i --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock  docker/ucp:{{ ucp_version }} restore 
-		
+
 #
 # restart docker
 #
 systemctl restart docker
-		
-nodesdown=$(docker node ls  --format '{{ '{{' }}.Status{{ '}}'}} {{ '{{' }}.ID{{ '}}' }}' | awk '/Down / {print $2}')
-for node in $nodesdown ; do docker node rm $node ; done
 
-nodesdown=$(docker node ls  --format '{{ '{{' }}.Status{{ '}}'}} {{ '{{' }}.ID{{ '}}' }}' | awk '/Unknown / {print $2}')
-for node in $nodesdown ; do echo removing node $node ; docker node rm $node ; done
+#
+# delete the old incarnations of the cluster members
+#
+if [  "$ucp_only" != "true" ]
+then
+  nodesdown=$(docker node ls  --format '{{ '{{' }}.Status{{ '}}'}} {{ '{{' }}.ID{{ '}}' }}' | awk '/Down / {print $2}')
+  for node in $nodesdown ; do docker node rm $node ; done
+
+  nodesdown=$(docker node ls  --format '{{ '{{' }}.Status{{ '}}'}} {{ '{{' }}.ID{{ '}}' }}' | awk '/Unknown / {print $2}')
+  for node in $nodesdown ; do echo removing node $node ; docker node rm $node ; done
+fi
 

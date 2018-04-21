@@ -1,10 +1,8 @@
 ---
-# This playbook will Rrestore the swarm fomr a disaster
+# This playbook restore the cluster after a disaster
 
 - import_playbook: playbooks/create_vms.yml
 - import_playbook: playbooks/config_networking.yml
-# this step is optional; enabling it will allow for passwordless login between nodes
-#- import_playbook: playbooks/distribute_keys.yml
 #- import_playbook: playbooks/config_subscription.yml
 - import_playbook: playbooks/install_haproxy.yml
 - import_playbook: playbooks/config_ntp.yml
@@ -14,7 +12,6 @@
 - import_playbook: playbooks/docker_post_config.yml
 - import_playbook: playbooks/install_nfs_server.yml
 - import_playbook: playbooks/install_nfs_clients.yml
-# files needed by prometheus must be here before we start the swarm
 - import_playbook: playbooks/restore_ucp.yml
 - import_playbook: playbooks/restore_dtr_images.yml
 - import_playbook: playbooks/restore_dtr_metadata.yml
