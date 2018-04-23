@@ -80,7 +80,7 @@
 #
 
     - name: Join DTR nodes
-      command: docker run --env UCP_USERNAME --env UCP_PASSWORD {{ switch_env_ucp_ca }}  docker/dtr:{{ dtr_version }} join |
+      command: docker run --env UCP_USERNAME --env UCP_PASSWORD {{ switch_env_ucp_ca }}  docker/dtr:{{ dtr_version }} join 
         --ucp-node {{ inventory_hostname }}.{{ domain_name }} 
         --ucp-url https://{{ ucp_instance }}.{{ domain_name }} 
         {{ switch_ucp_insecure }} --existing-replica-id {{ existing_dtr_replica_id }}

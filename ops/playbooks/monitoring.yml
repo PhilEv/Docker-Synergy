@@ -109,38 +109,6 @@
       
 # end of section of non docker hosts
 
-#
-# Deploy a stack for Docker hosts
-#
-    - block:
-
-      - name: Create script directory
-        file:
-          path: /root/scripts/monitoring
-          state: directory
-
-      - name: Copy script file for Docker hosts
-        template:
-          src: ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
-          dest: /root/scripts/monitoring/splunk.yml
-        with_first_found:
-          - files:
-              - ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
-            skip: true
- 
-      - name: Deploy Splunk Stack
-        command: docker stack deploy --compose-file splunk.yml {{ monitoring_stack | default ('splunk') }}
-        args:
-          chdir: /root/scripts/monitoring
-        with_first_found:
-          - files:
-              - ../templates/monitoring/{{ monitoring_stack }}/splunk.yml.j2
-            skip: true
-
-      when: inventory_hostname == ucp_instance
-
-# end of section for docker hosts
-
     when: monitoring_stack is defined
 
 

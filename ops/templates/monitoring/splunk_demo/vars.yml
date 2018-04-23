@@ -8,7 +8,7 @@
 splunk_architecture_universal_forwarder_package: 'splunkforwarder-7.0.2'
 
 # tag/version of the splunk containers we deploy on the linux docker hosts
-splunk_architecture_splunk_version: 7.0.2-monitor
+splunk_architecture_splunk_version: 7.0.3-monitor
 
 #
 # we need to open port 1514/tcp to receive ucp syslogs

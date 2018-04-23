@@ -23,9 +23,10 @@
 - import_playbook: playbooks/scale_workers_win.yml
 #- import_playbook: playbooks/install_logspout.yml
 #- import_playbook: playbooks/config_monitoring.yml
+- import_playbook: playbooks/splunk_demo.yml
 - import_playbook: playbooks/monitoring.yml
 - import_playbook: playbooks/monitoring_win.yml
 - import_playbook: playbooks/config_scheduler.yml
 - import_playbook: playbooks/scale_dtr.yml
 - import_playbook: playbooks/reconfigure_dtr.yml
-- import_playbook: playbooks/install_sysdig.yml
+#- import_playbook: playbooks/install_sysdig.yml
