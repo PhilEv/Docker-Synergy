@@ -1,18 +1,18 @@
-###
-# Copyright (2017) Hewlett Packard Enterprise Development LP
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# You may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-###
+#!/bin/bash
+set -e
+set -o pipefail
+while getopts 'v:' OPTION; do
+  case "$OPTION" in
+    v)
+      vault_switch="--vault-password-file=$OPTARG" 
+      ;;
+    ?)
+      echo "script usage: $(basename $0) [-v VaultPasswordfile]" >&2
+      exit 1
+      ;;
+  esac
+done
+shift "$(($OPTIND -1))"
 
 tag="$1"
 if [ "$tag" != "" ]
@@ -28,11 +28,11 @@ else
   backup_dtr_data=""
 fi
 
-ansible-playbook -i vm_hosts playbooks/backup_swarm.yml        $backup_swarm 
+vswitch=${vault_switch:-}
+ansible-playbook -i vm_hosts playbooks/backup_swarm.yml        ${vswitch} $backup_swarm
 sleep 20
-ansible-playbook -i vm_hosts playbooks/backup_ucp.yml          $backup_ucp
+ansible-playbook -i vm_hosts playbooks/backup_ucp.yml          ${vswitch} $backup_ucp
 sleep 20
-ansible-playbook -i vm_hosts playbooks/backup_dtr_metadata.yml $backup_dtr_meta
+ansible-playbook -i vm_hosts playbooks/backup_dtr_metadata.yml ${vswitch} $backup_dtr_meta
 sleep 20
 ansible-playbook -i vm_hosts playbooks/backup_dtr_images.yml   $backup_dtr_data
-
