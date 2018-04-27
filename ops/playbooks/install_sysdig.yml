@@ -148,4 +148,68 @@
             - /lib/modules:/host/lib/modules:ro
             - /usr:/host/usr:ro
         shm_size: 512m
+   
+
+- hosts: nfs,logger,lbs
+  vars_files:
+    - ../group_vars/vars
+    - ../group_vars/vault
+
+  environment: "{{ env }}"
+  tasks:
+    #
+    # Determine if firewalld is enabled and set 
+    # 'firewalld_enabled' to true if enabled
+    #
+    - name: Determine if firewalld is enabled
+      command: systemctl status firewalld
+      ignore_errors: yes
+      register: firewalld
+
+    - set_fact:
+        firewalld_not_enabled: true
+      when: 
+        - firewalld.rc != 0
+
+    #
+    # Open required firewall ports
+    #
+    - name: Configure required firewall ports
+      firewalld:
+        port: 6666/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+      when:
+        - firewalld_not_enabled is undefined
+
+    #
+    # Verify remote system can open a connection to 
+    # collector.sysdigcloud.com port 6666 to send Sysdig
+    # information to Sysdig's SaaS instance.  If the connection
+    # succeeds then set the variable 'sysdig_connection'
+    # to 'true' and continue.  Otherwise print an error
+    # message explaining that connectivity requirements 
+    # were not met.
+    #
+    - name: Check connectivity to collector.sysdigcloud.com port 6666
+      wait_for:
+        host: collector.sysdigcloud.com
+        port: 6666
+        state: started
+        timeout: 10
+        msg: "Connectivity to collector.sysdigcloud.com port 6666 failed!  Exiting."
+
+    - set_fact:
+        sysdig_connection: true
+
+    - name: Download Sysdig native Linux agent
+      get_url: 
+       url: "{{ sysdig_agent }}"
+       dest: /root/install-agent.sh
+       mode: 0755
+      
+    - name: execute install-agent.sh
+      command: /root/install-agent.sh --access_key '{{ sysdig_access_key }}' --tags '{{ sysdig_tags }}'
 ...
+     
