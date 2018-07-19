@@ -35,7 +35,7 @@
 
     - name: source stack specific variables
       include_vars:
-        file: ../templates/monitoring/splunk_demo/vars.yml
+        file: ../templates/splunk/splunk_demo/vars.yml
 
     #
     # Deploy a stack for Docker hosts
@@ -49,7 +49,7 @@
 
       - name: Copy script file for Docker hosts
         template:
-          src: ../templates/monitoring/splunk_demo/splunk.yml.j2
+          src: ../templates/splunk/splunk_demo/splunk.yml.j2
           dest: /root/scripts/monitoring/splunk.yml
         notify: Deploy Splunk Stack
  
