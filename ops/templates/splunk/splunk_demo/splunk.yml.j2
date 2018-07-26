@@ -4,7 +4,7 @@ services:
     hostname: splunkenterprise
     image: chris7444/splunk:{{ splunk_architecture_splunk_version }}
     environment:
-      SPLUNK_START_ARGS: --accept-license --answer-yes
+      SPLUNK_START_ARGS: --accept-license --answer-yes --seed-passwd changeme
       SPLUNK_ENABLE_LISTEN: 9997
       SPLUNK_ADD: "tcp 1514 -sourcetype ucp"
     volumes:
