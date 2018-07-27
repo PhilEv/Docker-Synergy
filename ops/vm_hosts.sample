@@ -101,6 +101,7 @@ cpus='4'
 ram='65536'
 disk1_size='100'
 disk2_size='500'
+# Kubernetes 1.8 does not support windows worker nodes
 orchestrator=swarm
 
 [all_vms:children]
