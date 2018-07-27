@@ -38,7 +38,7 @@ ntp_servers: ['10.60.1.123','0.us.pool.net.org','1.us.pool.net.org']
 # docker_ee_version: 'docker-ee-17.06.2.ee.6-3.el7.rhel.x86_64'
 # make sure you specify docker_ee_version with the version that went thru QA
 # docker_ee_version: 'docker-ee-17.06.2.ee.8-3.el7.rhel.x86_64'
-rhel_version: '7.4'
+rhel_version: '7.5'
 # replace dtr_version and ucp_version by the actual version number which went thru QA
 dtr_version: 'latest'
 ucp_version: 'latest'
