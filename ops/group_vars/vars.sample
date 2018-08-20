@@ -121,6 +121,7 @@ sysdig_tags: 'location:EnterCity,role:Enterprise CaaS on Synergy,owner:Customer 
 
 #k8s sysdig restricted control type
 restricted_control_role: 'Restricted Control'
+k8s_cluster: 'ucp_hpe-ucp.cloudra.local'
 
 #k8s nfs provisionner role name
 nfs_provisioner_role: 'nfs-provisioner-runner'

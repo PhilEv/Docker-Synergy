@@ -64,7 +64,6 @@ spec:
         env:
         ### REQUIRED: replace with your Sysdig Platform access key
         - name: ACCESS_KEY
-          #value: 083d1138-2658-42ef-9b37-7653cf60d57c
           value: '{{ sysdig_access_key }}'
         ### OPTIONAL: add tags for this host
         # - name: TAGS
@@ -84,7 +83,7 @@ spec:
         - name: ADDITIONAL_CONF
           value: |
           new_k8s: true
-          k8s_cluster_name: ucp_nm-ucp.cloudra.local
+          k8s_cluster_name: '{{ k8s_cluster }}' 
         volumeMounts:
         - mountPath: /host/var/run/docker.sock
           name: docker-sock
