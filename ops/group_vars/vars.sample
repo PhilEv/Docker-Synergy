@@ -119,6 +119,9 @@ monitoring_stack: splunk_demo
 sysdig_agent: 'https://s3.amazonaws.com/download.draios.com/stable/install-agent'
 sysdig_tags: 'location:EnterCity,role:Enterprise CaaS on Synergy,owner:Customer name'
 
+#k8s sysdig restricted control type
+restricted_control_role: 'Restricted Control'
+
 #k8s nfs provisionner role name
 nfs_provisioner_role: 'nfs-provisioner-runner'
 nfs_provisioner_name: "hpe.com/nfs"
