@@ -75,7 +75,7 @@
     - set_fact: 
         restricted_role: "{{ roles.json | json_query(query) }}"
       vars:
-        query: "[?name == '{{ restricted_control_role }}' ].{id: id, name: name }"
+        query: "[?name == '{{ sysdig_restricted_control_role }}' ].{id: id, name: name }"
 
 #
 # Create the role if it does not already exists
@@ -130,7 +130,7 @@
     - set_fact:
         restricted_role: "{{ roles.json | json_query(query) }}"
       vars:
-        query: "[?name == '{{ restricted_control_role }}' ].{id: id, name: name }"
+        query: "[?name == '{{ sysdig_restricted_control_role }}' ].{id: id, name: name }"
 
     - name: List all roles
       uri:
@@ -148,7 +148,7 @@
     - set_fact:
         restricted: "{{ roles.json | json_query(query) }}"
       vars:
-        query: "[?name == '{{ restricted_control_role }}' ].{id: id, name: name }"
+        query: "[?name == '{{ sysdig_restricted_control_role }}' ].{id: id, name: name }"
 
     - fail:
       when: restricted_role | count ==0
