@@ -14,7 +14,8 @@
 # limitations under the License.
 ### 
 ---
-- hosts: ucp_main
+- name: Create UCP node1
+  hosts: ucp_main
   gather_facts: false
   become_user: root
   become: true
